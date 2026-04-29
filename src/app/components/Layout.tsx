@@ -1,4 +1,4 @@
-import { Outlet, Link, useLocation } from "react-router";
+import { Outlet, Link, useLocation, useNavigate } from "react-router";
 import {
   LayoutDashboard,
   Map,
@@ -10,23 +10,44 @@ import {
   Bell,
   User,
   Menu,
-  X
+  X,
+  LogOut,
 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { getStoredUser, clearAuth } from "@/utils/authStorage.js";
 
-const navItems = [
-  { path: '/app', icon: LayoutDashboard, label: 'Dashboard' },
-  { path: '/app/map', icon: Map, label: 'GIS Map' },
-  { path: '/app/audit', icon: ClipboardList, label: 'Audit Form' },
-  { path: '/app/ai-analysis', icon: Brain, label: 'AI Analysis' },
-  { path: '/app/future-approval', icon: Building2, label: 'Future Approval' },
-  { path: '/app/admin', icon: Settings, label: 'Admin Panel' },
+const allNavItems = [
+  { path: "/app", icon: LayoutDashboard, label: "Dashboard" },
+  { path: "/app/map", icon: Map, label: "GIS Map" },
+  { path: "/app/audit", icon: ClipboardList, label: "Audit Form" },
+  { path: "/app/ai-analysis", icon: Brain, label: "AI Analysis" },
+  { path: "/app/future-approval", icon: Building2, label: "Future Approval" },
+  { path: "/app/admin", icon: Settings, label: "Admin Panel", adminOnly: true },
 ];
 
 export function Layout() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  const user = getStoredUser();
+
+  const navItems = useMemo(() => {
+    return allNavItems.filter((item) => !item.adminOnly || user?.role === "admin");
+  }, [user?.role]);
+
+  const isNavActive = (path: string) => {
+    if (path === "/app") {
+      return location.pathname === "/app" || location.pathname === "/app/";
+    }
+    return location.pathname === path || location.pathname.startsWith(`${path}/`);
+  };
+
+  const handleLogout = () => {
+    clearAuth();
+    navigate("/login", { replace: true });
+  };
 
   return (
     <div className="flex h-screen bg-background">
@@ -53,15 +74,15 @@ export function Layout() {
 
             <nav className="flex-1 p-4 space-y-1">
               {navItems.map((item) => {
-                const isActive = location.pathname === item.path;
+                const isActive = isNavActive(item.path);
                 return (
                   <Link
                     key={item.path}
                     to={item.path}
                     className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                       isActive
-                        ? 'bg-primary text-white'
-                        : 'text-sidebar-foreground hover:bg-sidebar-accent'
+                        ? "bg-primary text-white"
+                        : "text-sidebar-foreground hover:bg-sidebar-accent"
                     }`}
                   >
                     <item.icon className="w-5 h-5" />
@@ -71,16 +92,29 @@ export function Layout() {
               })}
             </nav>
 
-            <div className="p-4 border-t border-sidebar-border">
+            <div className="p-4 border-t border-sidebar-border space-y-2">
               <div className="flex items-center gap-3 px-4 py-3">
-                <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center">
+                <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center shrink-0">
                   <User className="w-4 h-4 text-white" />
                 </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-sidebar-foreground">Engineer</p>
-                  <p className="text-xs text-muted-foreground">Punjab PWD</p>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-sidebar-foreground truncate">
+                    {user?.name || "User"}
+                  </p>
+                  <p className="text-xs text-muted-foreground capitalize truncate">
+                    {user?.role || "—"}
+                    {user?.department ? ` · ${user.department}` : ""}
+                  </p>
                 </div>
               </div>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent border border-sidebar-border"
+              >
+                <LogOut className="w-4 h-4" />
+                Sign out
+              </button>
             </div>
           </motion.aside>
         )}
@@ -89,6 +123,7 @@ export function Layout() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="h-16 bg-card border-b border-border flex items-center justify-between px-6">
           <button
+            type="button"
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="p-2 hover:bg-accent rounded-lg transition-colors"
           >
@@ -96,9 +131,9 @@ export function Layout() {
           </button>
 
           <div className="flex items-center gap-4">
-            <button className="relative p-2 hover:bg-accent rounded-lg transition-colors">
+            <button type="button" className="relative p-2 hover:bg-accent rounded-lg transition-colors">
               <Bell className="w-5 h-5" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-[#ef4444] rounded-full"></span>
+              <span className="absolute top-1 right-1 w-2 h-2 bg-[#ef4444] rounded-full" />
             </button>
           </div>
         </header>

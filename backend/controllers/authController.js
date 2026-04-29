@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const ActivityLog = require('../models/ActivityLog');
 const config = require('../config');
 const AppError = require('../utils/AppError');
 const { getClientIp } = require('../utils/ip');
@@ -15,6 +16,22 @@ function signToken(user) {
     config.jwtSecret,
     { expiresIn: config.jwtExpiresIn }
   );
+}
+
+/**
+ * Optional role hint for UX (may allow email existence inference — use behind CAPTCHA/rate limits in hardened deployments).
+ */
+async function hintRole(req, res) {
+  const email = String(req.body.email || '')
+    .trim()
+    .toLowerCase();
+  const user = await User.findOne({ email }).select('role');
+  res.json({
+    success: true,
+    data: {
+      suggested_role: user ? user.role : null,
+    },
+  });
 }
 
 async function register(req, res) {
@@ -53,7 +70,7 @@ async function register(req, res) {
 }
 
 async function login(req, res) {
-  const { email, password } = req.body;
+  const { email, password, role: selectedRole } = req.body;
 
   const user = await User.findOne({ email }).select('+password');
   if (!user) {
@@ -77,11 +94,30 @@ async function login(req, res) {
     throw new AppError('Invalid email or password', 401);
   }
 
+  if (selectedRole && user.role !== selectedRole) {
+    await activityLogService.record({
+      user_id: user._id,
+      action: 'login_failed_role_mismatch',
+      entity: 'Auth',
+      ip_address: getClientIp(req),
+      metadata: { expected_portal_role: selectedRole, account_role: user.role },
+    });
+    throw new AppError('Selected role does not match your account role', 403);
+  }
+
+  const currentIp = getClientIp(req);
+  const otherIpLogin = await ActivityLog.exists({
+    user_id: user._id,
+    action: 'login_success',
+    ip_address: { $nin: [currentIp, '', null] },
+  });
+  const new_ip_detected = Boolean(otherIpLogin && currentIp);
+
   await activityLogService.record({
     user_id: user._id,
     action: 'login_success',
     entity: 'Auth',
-    ip_address: getClientIp(req),
+    ip_address: currentIp,
   });
 
   const token = signToken(user);
@@ -91,8 +127,12 @@ async function login(req, res) {
     data: {
       user: user.toSafeJSON(),
       token,
+      security: {
+        new_ip_detected,
+        suspicious_login: new_ip_detected,
+      },
     },
   });
 }
 
-module.exports = { register, login, signToken };
+module.exports = { register, login, signToken, hintRole };

@@ -7,6 +7,7 @@ const activityLogSchema = new mongoose.Schema(
     entity: { type: String, required: true, trim: true },
     timestamp: { type: Date, default: Date.now, index: true },
     ip_address: { type: String, trim: true, default: '' },
+    metadata: { type: mongoose.Schema.Types.Mixed },
   },
   { versionKey: false }
 );

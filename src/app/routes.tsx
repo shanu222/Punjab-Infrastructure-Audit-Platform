@@ -1,6 +1,7 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, Navigate } from "react-router";
 import { Layout } from "./components/Layout";
-import { Login } from "./components/Login";
+import LoginPage from "@/pages/login";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Dashboard } from "./components/Dashboard";
 import { MapView } from "./components/MapView";
 import { AssetDetail } from "./components/AssetDetail";
@@ -14,20 +15,29 @@ import { NotFound } from "./components/NotFound";
 export const router = createBrowserRouter([
   {
     path: "/",
-    Component: Login,
+    element: <Navigate to="/login" replace />,
+  },
+  {
+    path: "/login",
+    Component: LoginPage,
   },
   {
     path: "/app",
-    Component: Layout,
+    Component: ProtectedRoute,
     children: [
-      { index: true, Component: Dashboard },
-      { path: "map", Component: MapView },
-      { path: "assets/:id", Component: AssetDetail },
-      { path: "audit", Component: AuditForm },
-      { path: "ai-analysis", Component: AIRiskDashboard },
-      { path: "reports/:id", Component: ReportGeneration },
-      { path: "future-approval", Component: FutureInfraApproval },
-      { path: "admin", Component: AdminPanel },
+      {
+        Component: Layout,
+        children: [
+          { index: true, Component: Dashboard },
+          { path: "map", Component: MapView },
+          { path: "assets/:id", Component: AssetDetail },
+          { path: "audit", Component: AuditForm },
+          { path: "ai-analysis", Component: AIRiskDashboard },
+          { path: "reports/:id", Component: ReportGeneration },
+          { path: "future-approval", Component: FutureInfraApproval },
+          { path: "admin", Component: AdminPanel },
+        ],
+      },
     ],
   },
   {

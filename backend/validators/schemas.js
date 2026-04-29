@@ -14,6 +14,18 @@ const registerSchema = Joi.object({
 const loginSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().required(),
+  /** When set, must match the account role (portal role selection). */
+  role: Joi.string().valid('admin', 'engineer', 'government').optional(),
+});
+
+const hintRoleSchema = Joi.object({
+  email: Joi.string().email().required(),
+});
+
+const clientLoginLogSchema = Joi.object({
+  role: Joi.string().valid('admin', 'engineer', 'government').required(),
+  client_timestamp: Joi.string().max(64).required(),
+  device_info: Joi.object().unknown(true).required(),
 });
 
 const createAssetSchema = Joi.object({
@@ -78,6 +90,8 @@ const futureAnalysisSchema = Joi.object({
 module.exports = {
   registerSchema,
   loginSchema,
+  hintRoleSchema,
+  clientLoginLogSchema,
   createAssetSchema,
   createAuditSchema,
   uploadFolderSchema,

@@ -10,6 +10,7 @@ const authRoutes = require('./routes/authRoutes');
 const assetRoutes = require('./routes/assetRoutes');
 const auditRoutes = require('./routes/auditRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
+const logsRoutes = require('./routes/logsRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const mapRoutes = require('./routes/mapRoutes');
 const aiRoutes = require('./routes/aiRoutes');
@@ -48,6 +49,7 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/logs', logsRoutes);
 app.use('/api/assets', assetRoutes);
 app.use('/api/audits', auditRoutes);
 app.use('/api/upload', uploadRoutes);
