@@ -4,7 +4,7 @@ const Audit = require('../models/Audit');
 const Asset = require('../models/Asset');
 const AppError = require('../utils/AppError');
 const { getClientIp } = require('../utils/ip');
-const { assessRisk } = require('../services/riskEngine');
+const { assessRiskFromAuditScores } = require('../services/riskEngine');
 const activityLogService = require('../services/activityLogService');
 const { createAuditSchema } = require('../validators/schemas');
 const {
@@ -13,9 +13,25 @@ const {
   resolveMediaList,
   getSignedGetUrl,
 } = require('../services/s3Service');
+const { generateAuditPdfBuffer } = require('../services/reportPdfService');
+
+function coerceJsonField(body, key, required = false) {
+  const v = body[key];
+  if (v === undefined || v === null || v === '') {
+    if (required) throw new AppError(`Missing field: ${key}`, 400);
+    return undefined;
+  }
+  if (typeof v === 'object' && !Buffer.isBuffer(v)) return v;
+  try {
+    return JSON.parse(v);
+  } catch {
+    throw new AppError(`Invalid JSON for ${key}`, 400);
+  }
+}
 
 function parseMultipartAuditBody(body) {
   const raw = { ...body };
+
   if (typeof raw.media_urls === 'string' && raw.media_urls.trim()) {
     try {
       raw.media_urls = JSON.parse(raw.media_urls);
@@ -26,12 +42,20 @@ function parseMultipartAuditBody(body) {
     raw.media_urls = [];
   }
 
+  const structural_checklist = coerceJsonField(raw, 'structural_checklist') || {};
+  const disaster_assessment = coerceJsonField(raw, 'disaster_assessment') || {};
+  const scoresObj = coerceJsonField(raw, 'scores', true);
+
   const payload = {
     asset_id: raw.asset_id,
-    structural_score: Number(raw.structural_score),
-    flood_score: Number(raw.flood_score),
-    earthquake_score: Number(raw.earthquake_score),
-    heat_score: Number(raw.heat_score),
+    structural_checklist,
+    disaster_assessment,
+    scores: {
+      structural: Number(scoresObj.structural),
+      flood: Number(scoresObj.flood),
+      earthquake: Number(scoresObj.earthquake),
+      heat: Number(scoresObj.heat),
+    },
     media_urls: raw.media_urls,
     notes: raw.notes !== undefined && raw.notes !== null ? String(raw.notes) : '',
   };
@@ -85,8 +109,7 @@ async function createAudit(req, res) {
     payload = value;
   }
 
-  const { asset_id, structural_score, flood_score, earthquake_score, heat_score, media_urls, notes } =
-    payload;
+  const { asset_id, structural_checklist, disaster_assessment, scores, media_urls, notes } = payload;
 
   if (!mongoose.isValidObjectId(asset_id)) {
     throw new AppError('Invalid asset_id', 400);
@@ -97,23 +120,21 @@ async function createAudit(req, res) {
     throw new AppError('Asset not found', 404);
   }
 
-  const risk = assessRisk({
-    structural_score,
-    flood_score,
-    earthquake_score,
-    heat_score,
-  });
+  const risk = assessRiskFromAuditScores(scores);
 
   const audit = await Audit.create({
     asset_id,
     engineer_id: req.user.id,
-    structural_score,
-    flood_score,
-    earthquake_score,
-    heat_score,
+    structural_checklist,
+    disaster_assessment,
+    scores,
     overall_risk: risk.overall_risk,
     media_urls: media_urls || [],
     notes: notes || '',
+  });
+
+  await Asset.findByIdAndUpdate(asset_id, {
+    risk_score: Math.min(100, Math.max(0, Math.round(risk.composite))),
   });
 
   await activityLogService.record({
@@ -125,7 +146,7 @@ async function createAudit(req, res) {
 
   const populated = await Audit.findById(audit._id)
     .populate('asset_id')
-    .populate('engineer_id', 'name email role');
+    .populate('engineer_id', 'name email role department');
 
   const auditOut = await enrichAuditForResponse(populated);
 
@@ -155,7 +176,7 @@ async function getAuditsByAsset(req, res) {
 
   const audits = await Audit.find({ asset_id })
     .sort({ createdAt: -1 })
-    .populate('engineer_id', 'name email role')
+    .populate('engineer_id', 'name email role department')
     .lean();
 
   const auditsOut = await Promise.all(audits.map((a) => enrichAuditForResponse(a)));
@@ -166,6 +187,55 @@ async function getAuditsByAsset(req, res) {
       asset_id,
       count: auditsOut.length,
       audits: auditsOut,
+    },
+  });
+}
+
+async function generateAuditReport(req, res) {
+  const { auditId } = req.params;
+  if (!mongoose.isValidObjectId(auditId)) {
+    throw new AppError('Invalid audit id', 400);
+  }
+
+  const audit = await Audit.findById(auditId).populate('asset_id');
+  if (!audit) {
+    throw new AppError('Audit not found', 404);
+  }
+
+  const asset = audit.asset_id;
+  let buffer;
+  try {
+    buffer = await generateAuditPdfBuffer(audit, asset);
+  } catch (err) {
+    throw new AppError(err.message || 'PDF generation failed', 500);
+  }
+
+  const file = {
+    buffer,
+    mimetype: 'application/pdf',
+    originalname: `audit-report-${auditId}.pdf`,
+    size: buffer.length,
+  };
+
+  const { key, signedUrl, expiresIn } = await uploadFile(file, 'reports');
+
+  audit.report_pdf = key;
+  await audit.save();
+
+  await activityLogService.record({
+    user_id: new mongoose.Types.ObjectId(req.user.id),
+    action: 'audit_report_generated',
+    entity: `Audit:${audit._id}`,
+    ip_address: getClientIp(req),
+  });
+
+  res.status(201).json({
+    success: true,
+    data: {
+      audit_id: audit._id,
+      report_pdf_key: key,
+      report_pdf_url: signedUrl,
+      url_expires_in_seconds: expiresIn,
     },
   });
 }
@@ -208,7 +278,6 @@ async function attachReportPdf(req, res) {
   });
 }
 
-/** Multer for audit media (images/videos only at create time). */
 const auditUpload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 100 * 1024 * 1024, files: 25 },
@@ -229,6 +298,7 @@ const reportPdfUpload = multer({
 module.exports = {
   createAudit,
   getAuditsByAsset,
+  generateAuditReport,
   attachReportPdf,
   conditionalAuditUpload,
   reportPdfUpload,

@@ -35,8 +35,8 @@ async function main() {
     email: email.toLowerCase(),
     password: hashed,
     role: 'admin',
+    department: 'Administration',
   });
-
   console.log('Admin user created successfully.');
   await mongoose.connection.close();
   process.exit(0);

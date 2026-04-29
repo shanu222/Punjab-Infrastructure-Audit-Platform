@@ -18,7 +18,7 @@ function signToken(user) {
 }
 
 async function register(req, res) {
-  const { name, email, password, role } = req.body;
+  const { name, email, password, role, department } = req.body;
 
   const existing = await User.findOne({ email });
   if (existing) {
@@ -31,6 +31,7 @@ async function register(req, res) {
     email,
     password: hashed,
     role,
+    department: department || '',
   });
 
   await activityLogService.record({

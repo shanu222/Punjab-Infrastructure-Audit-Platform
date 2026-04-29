@@ -1,15 +1,6 @@
 const mongoose = require('mongoose');
 
-const ASSET_TYPES = [
-  'building',
-  'road',
-  'bridge',
-  'dam',
-  'canal',
-  'power',
-  'water_supply',
-  'other',
-];
+const ASSET_TYPES = ['building', 'road', 'bridge', 'dam', 'canal', 'power', 'water_supply', 'other'];
 
 const locationSchema = new mongoose.Schema(
   {
@@ -27,6 +18,8 @@ const assetSchema = new mongoose.Schema(
     construction_year: { type: Number, min: 1800, max: 2100 },
     material: { type: String, trim: true },
     structural_type: { type: String, trim: true },
+    /** Latest composite risk index (0–100, higher = worse); updated when audits complete. */
+    risk_score: { type: Number, min: 0, max: 100, default: null },
     created_by: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   },
   { timestamps: { createdAt: true, updatedAt: true } }

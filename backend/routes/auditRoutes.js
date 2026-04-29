@@ -5,6 +5,7 @@ const { requireRoles } = require('../middleware/rbac');
 const {
   createAudit,
   getAuditsByAsset,
+  generateAuditReport,
   attachReportPdf,
   conditionalAuditUpload,
   reportPdfUpload,
@@ -18,6 +19,13 @@ router.post(
   requireRoles('admin', 'engineer'),
   conditionalAuditUpload,
   asyncHandler(createAudit)
+);
+
+router.post(
+  '/:auditId/generate-report',
+  protect,
+  requireRoles('admin', 'engineer'),
+  asyncHandler(generateAuditReport)
 );
 
 router.post(

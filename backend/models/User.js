@@ -18,6 +18,7 @@ const userSchema = new mongoose.Schema(
       enum: ROLES,
       default: 'engineer',
     },
+    department: { type: String, trim: true, default: '' },
   },
   { timestamps: { createdAt: 'createdAt', updatedAt: false } }
 );
@@ -28,6 +29,7 @@ userSchema.methods.toSafeJSON = function toSafeJSON() {
     name: this.name,
     email: this.email,
     role: this.role,
+    department: this.department || '',
     createdAt: this.createdAt,
   };
 };

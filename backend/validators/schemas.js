@@ -1,12 +1,14 @@
 const Joi = require('joi');
 const { ASSET_TYPES } = require('../models/Asset');
 
+const severity = Joi.string().valid('none', 'low', 'moderate', 'high', 'critical');
+
 const registerSchema = Joi.object({
   name: Joi.string().min(2).max(120).required(),
   email: Joi.string().email().required(),
   password: Joi.string().min(8).max(128).required(),
-  /** Self-service registration is limited to engineer & government; create admins via seed script. */
   role: Joi.string().valid('engineer', 'government').default('engineer'),
+  department: Joi.string().max(160).allow('').default(''),
 });
 
 const loginSchema = Joi.object({
@@ -27,14 +29,34 @@ const createAssetSchema = Joi.object({
   construction_year: Joi.number().integer().min(1800).max(2100),
   material: Joi.string().max(200).allow(''),
   structural_type: Joi.string().max(200).allow(''),
+  risk_score: Joi.number().min(0).max(100).allow(null),
+});
+
+const structuralChecklistSchema = Joi.object({
+  cracks: severity.default('none'),
+  foundation: severity.default('none'),
+  load_capacity: severity.default('none'),
+  corrosion: severity.default('none'),
+});
+
+const disasterAssessmentSchema = Joi.object({
+  flood: severity.default('none'),
+  earthquake: severity.default('none'),
+  heat: severity.default('none'),
+});
+
+const scoresSchema = Joi.object({
+  structural: Joi.number().min(0).max(100).required(),
+  flood: Joi.number().min(0).max(100).required(),
+  earthquake: Joi.number().min(0).max(100).required(),
+  heat: Joi.number().min(0).max(100).required(),
 });
 
 const createAuditSchema = Joi.object({
   asset_id: Joi.string().required(),
-  structural_score: Joi.number().min(0).max(100).required(),
-  flood_score: Joi.number().min(0).max(100).required(),
-  earthquake_score: Joi.number().min(0).max(100).required(),
-  heat_score: Joi.number().min(0).max(100).required(),
+  structural_checklist: structuralChecklistSchema.optional(),
+  disaster_assessment: disasterAssessmentSchema.optional(),
+  scores: scoresSchema.required(),
   media_urls: Joi.array().items(Joi.string().max(2048)).max(50).default([]),
   notes: Joi.string().max(20000).allow(''),
 });
@@ -43,10 +65,21 @@ const uploadFolderSchema = Joi.object({
   folder: Joi.string().valid('images', 'videos', 'reports').required(),
 });
 
+const futureAnalysisSchema = Joi.object({
+  location: Joi.object({
+    lat: Joi.number().min(-90).max(90).required(),
+    lng: Joi.number().min(-180).max(180).required(),
+  }).required(),
+  type: Joi.string()
+    .valid(...ASSET_TYPES)
+    .required(),
+});
+
 module.exports = {
   registerSchema,
   loginSchema,
   createAssetSchema,
   createAuditSchema,
   uploadFolderSchema,
+  futureAnalysisSchema,
 };
