@@ -27,7 +27,7 @@ const allNavItems = [
     label: "AI Analysis",
     govAdminOnly: true,
   },
-  { path: "/app/future-approval", icon: Building2, label: "Future Approval" },
+  { path: "/app/future-approval", icon: Building2, label: "Future Approval", govAdminOnly: true },
   { path: "/app/admin", icon: Settings, label: "Admin Panel", adminOnly: true },
 ];
 

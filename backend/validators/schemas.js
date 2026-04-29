@@ -84,15 +84,24 @@ const uploadFolderSchema = Joi.object({
   folder: Joi.string().valid('images', 'videos', 'reports').required(),
 });
 
-const futureAnalysisSchema = Joi.object({
+const FUTURE_PROJECT_TYPES = ['building', 'road', 'bridge', 'dam'];
+
+const futureProjectSchema = Joi.object({
+  project_name: Joi.string().min(2).max(200).required(),
+  type: Joi.string()
+    .valid(...FUTURE_PROJECT_TYPES)
+    .required(),
   location: Joi.object({
     lat: Joi.number().min(-90).max(90).required(),
     lng: Joi.number().min(-180).max(180).required(),
   }).required(),
-  type: Joi.string()
-    .valid(...ASSET_TYPES)
-    .required(),
+  district: Joi.string().min(1).max(120).required(),
+  material: Joi.string().min(1).max(200).required(),
+  structural_type: Joi.string().min(1).max(200).required(),
 });
+
+/** @deprecated use futureProjectSchema */
+const futureAnalysisSchema = futureProjectSchema;
 
 const assetPatchFlagsSchema = Joi.object({
   is_flagged_critical: Joi.boolean().required(),
@@ -146,6 +155,7 @@ module.exports = {
   createAssetSchema,
   createAuditSchema,
   uploadFolderSchema,
+  futureProjectSchema,
   futureAnalysisSchema,
   assetPatchFlagsSchema,
   adminUserCreateSchema,

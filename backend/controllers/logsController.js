@@ -44,8 +44,7 @@ const ADMIN_LOG_ACTIONS = [
   'admin_asset_updated',
   'admin_asset_deleted',
   'admin_audit_status',
-  's3_upload',
-];
+  'future_analysis_run',
 
 async function listActivityLogs(req, res) {
   const { page, limit, skip } = parseLogPagination(req);
