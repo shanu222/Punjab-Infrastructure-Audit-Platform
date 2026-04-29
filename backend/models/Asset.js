@@ -20,6 +20,8 @@ const assetSchema = new mongoose.Schema(
     structural_type: { type: String, trim: true },
     /** Latest composite risk index (0–100, higher = worse); updated when audits complete. */
     risk_score: { type: Number, min: 0, max: 100, default: null },
+    /** Manual escalation for command-center dashboards (engineers / admins). */
+    is_flagged_critical: { type: Boolean, default: false, index: true },
     created_by: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   },
   { timestamps: { createdAt: true, updatedAt: true } }

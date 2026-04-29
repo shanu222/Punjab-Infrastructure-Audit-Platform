@@ -6,9 +6,15 @@ const activityLogService = require('../services/activityLogService');
 
 function formatAsset(doc) {
   const o = doc.toObject ? doc.toObject() : { ...doc };
+  const typeLabel = o.type
+    ? String(o.type)
+        .replace(/_/g, ' ')
+        .replace(/\b\w/g, (c) => c.toUpperCase())
+    : 'Asset';
   return {
     ...o,
     asset_id: o._id,
+    display_name: `${typeLabel} — ${o.district || ''}`.trim(),
   };
 }
 
@@ -71,4 +77,36 @@ async function getAssetById(req, res) {
   });
 }
 
-module.exports = { listAssets, createAsset, getAssetById, formatAsset };
+async function patchAssetFlags(req, res) {
+  const { id } = req.params;
+  if (!mongoose.isValidObjectId(id)) {
+    throw new AppError('Invalid asset id', 400);
+  }
+
+  const { is_flagged_critical } = req.body;
+
+  const asset = await Asset.findByIdAndUpdate(
+    id,
+    { $set: { is_flagged_critical } },
+    { new: true, runValidators: true }
+  ).populate('created_by', 'name email role department');
+
+  if (!asset) {
+    throw new AppError('Asset not found', 404);
+  }
+
+  await activityLogService.record({
+    user_id: new mongoose.Types.ObjectId(req.user.id),
+    action: is_flagged_critical ? 'asset_flagged_critical' : 'asset_unflagged_critical',
+    entity: `Asset:${asset._id}`,
+    ip_address: getClientIp(req),
+    metadata: { is_flagged_critical },
+  });
+
+  res.json({
+    success: true,
+    data: { asset: formatAsset(asset) },
+  });
+}
+
+module.exports = { listAssets, createAsset, getAssetById, patchAssetFlags, formatAsset };

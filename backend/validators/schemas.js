@@ -87,6 +87,10 @@ const futureAnalysisSchema = Joi.object({
     .required(),
 });
 
+const assetPatchFlagsSchema = Joi.object({
+  is_flagged_critical: Joi.boolean().required(),
+});
+
 module.exports = {
   registerSchema,
   loginSchema,
@@ -96,4 +100,5 @@ module.exports = {
   createAuditSchema,
   uploadFolderSchema,
   futureAnalysisSchema,
+  assetPatchFlagsSchema,
 };
