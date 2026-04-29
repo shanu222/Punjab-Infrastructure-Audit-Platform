@@ -64,6 +64,12 @@ const scoresSchema = Joi.object({
   heat: Joi.number().min(0).max(100).required(),
 });
 
+const captureLocationSchema = Joi.object({
+  lat: Joi.number().min(-90).max(90).required(),
+  lng: Joi.number().min(-180).max(180).required(),
+  accuracy_m: Joi.number().min(0).max(50000).optional(),
+});
+
 const createAuditSchema = Joi.object({
   asset_id: Joi.string().required(),
   structural_checklist: structuralChecklistSchema.optional(),
@@ -71,6 +77,7 @@ const createAuditSchema = Joi.object({
   scores: scoresSchema.required(),
   media_urls: Joi.array().items(Joi.string().max(2048)).max(50).default([]),
   notes: Joi.string().max(20000).allow(''),
+  capture_location: captureLocationSchema.optional(),
 });
 
 const uploadFolderSchema = Joi.object({

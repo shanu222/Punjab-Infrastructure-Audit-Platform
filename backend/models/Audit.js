@@ -32,6 +32,15 @@ const scoresSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const captureLocationSchema = new mongoose.Schema(
+  {
+    lat: { type: Number, required: true },
+    lng: { type: Number, required: true },
+    accuracy_m: { type: Number },
+  },
+  { _id: false }
+);
+
 const auditSchema = new mongoose.Schema(
   {
     asset_id: {
@@ -52,6 +61,8 @@ const auditSchema = new mongoose.Schema(
     media_urls: [{ type: String, trim: true }],
     report_pdf: { type: String, trim: true },
     notes: { type: String, trim: true, default: '' },
+    /** Device GPS at time of submission (field capture). */
+    capture_location: { type: captureLocationSchema, default: undefined },
   },
   { timestamps: { createdAt: 'createdAt', updatedAt: false } }
 );

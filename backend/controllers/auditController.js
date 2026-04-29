@@ -45,6 +45,7 @@ function parseMultipartAuditBody(body) {
   const structural_checklist = coerceJsonField(raw, 'structural_checklist') || {};
   const disaster_assessment = coerceJsonField(raw, 'disaster_assessment') || {};
   const scoresObj = coerceJsonField(raw, 'scores', true);
+  const capture_location = coerceJsonField(raw, 'capture_location') || undefined;
 
   const payload = {
     asset_id: raw.asset_id,
@@ -58,6 +59,7 @@ function parseMultipartAuditBody(body) {
     },
     media_urls: raw.media_urls,
     notes: raw.notes !== undefined && raw.notes !== null ? String(raw.notes) : '',
+    capture_location,
   };
 
   const { error, value } = createAuditSchema.validate(payload, {
@@ -109,7 +111,15 @@ async function createAudit(req, res) {
     payload = value;
   }
 
-  const { asset_id, structural_checklist, disaster_assessment, scores, media_urls, notes } = payload;
+  const {
+    asset_id,
+    structural_checklist,
+    disaster_assessment,
+    scores,
+    media_urls,
+    notes,
+    capture_location,
+  } = payload;
 
   if (!mongoose.isValidObjectId(asset_id)) {
     throw new AppError('Invalid asset_id', 400);
@@ -131,6 +141,7 @@ async function createAudit(req, res) {
     overall_risk: risk.overall_risk,
     media_urls: media_urls || [],
     notes: notes || '',
+    ...(capture_location ? { capture_location } : {}),
   });
 
   await Asset.findByIdAndUpdate(asset_id, {
