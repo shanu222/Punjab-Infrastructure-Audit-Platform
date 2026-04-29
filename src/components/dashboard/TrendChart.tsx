@@ -44,13 +44,15 @@ export function TrendChart({ data, loading }: Props) {
                 borderRadius: "8px",
                 border: "1px solid var(--border)",
                 background: "var(--popover)",
+                color: "var(--popover-foreground)",
               }}
+              labelStyle={{ color: "var(--muted-foreground)" }}
             />
             <Line
               type="monotone"
               dataKey="audits"
               name="Audits"
-              stroke="hsl(var(--primary))"
+              stroke="var(--chart-1)"
               strokeWidth={2}
               dot={{ r: 3 }}
               activeDot={{ r: 5 }}

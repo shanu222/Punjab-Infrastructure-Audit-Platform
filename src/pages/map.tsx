@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AlertTriangle, Loader2, Menu, Sparkles } from "lucide-react";
 import { toast } from "sonner";
+import { useTheme } from "@/context/ThemeContext";
 import {
   Drawer,
   DrawerClose,
@@ -103,6 +104,7 @@ function buildInsightBanners(insights: AiInsightsPayload | null): string[] {
 
 export function MapGisPage() {
   const isMobile = useIsMobile();
+  const { resolvedTheme } = useTheme();
   const [filters, setFilters] = useState<MapAssetFilters>(DEFAULT_FILTERS);
   const [layers, setLayers] = useState<MapLayerToggles>(DEFAULT_LAYERS);
   const [selectedAsset, setSelectedAsset] = useState<GisMapAsset | null>(null);
@@ -294,6 +296,7 @@ export function MapGisPage() {
               highlightDistrictsLower={highlightDistrictsLower}
               fitTick={fitTick}
               onSelect={setSelectedAsset}
+              mapTheme={resolvedTheme}
             />
             <AssetDetailsPanel
               asset={selectedAsset}

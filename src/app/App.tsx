@@ -1,13 +1,35 @@
+import type { CSSProperties } from "react";
 import { RouterProvider } from "react-router";
-import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
+import { ThemeProvider, useTheme } from "@/context/ThemeContext";
 import { router } from "./routes";
+
+function ThemedToaster() {
+  const { resolvedTheme } = useTheme();
+  return (
+    <Toaster
+      richColors
+      position="top-center"
+      closeButton
+      expand
+      className="font-sans transition-colors duration-300"
+      theme={resolvedTheme}
+      style={
+        {
+          "--normal-bg": "var(--popover)",
+          "--normal-text": "var(--popover-foreground)",
+          "--normal-border": "var(--border)",
+        } as CSSProperties
+      }
+    />
+  );
+}
 
 export default function App() {
   return (
-    <ThemeProvider attribute="class" defaultTheme="light" enableSystem storageKey="piap-ui-theme">
+    <ThemeProvider>
       <RouterProvider router={router} />
-      <Toaster richColors position="top-center" closeButton expand className="font-sans" />
+      <ThemedToaster />
     </ThemeProvider>
   );
 }

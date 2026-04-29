@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { motion } from "motion/react";
 import { Brain, ChevronRight, Download, Loader2, MapPin } from "lucide-react";
 import { getStoredUser } from "@/utils/authStorage.js";
+import { useTheme } from "@/context/ThemeContext";
 import { submitFutureAnalysis, fetchFutureAnalysisPdfBlob } from "@/services/futureService.js";
 import { ProjectForm } from "@/components/future/ProjectForm";
 import { MapSelector, type NearbyPin } from "@/components/future/MapSelector";
@@ -39,6 +40,7 @@ function validate(f: FutureFormState): FormErrors {
 export function FutureInfraApproval() {
   const navigate = useNavigate();
   const user = getStoredUser();
+  const { resolvedTheme } = useTheme();
   const allowed = user?.role === "admin" || user?.role === "government";
 
   const [step, setStep] = useState<1 | 2 | 3>(1);
@@ -212,6 +214,7 @@ export function FutureInfraApproval() {
                 lng={lngNum != null && !Number.isNaN(lngNum) ? lngNum : null}
                 onLocationChange={handleMapLocation}
                 nearbyAssets={[]}
+                mapTheme={resolvedTheme}
               />
             </div>
           </div>
@@ -266,6 +269,7 @@ export function FutureInfraApproval() {
                   onLocationChange={() => {}}
                   nearbyAssets={nearbyPins}
                   readOnly
+                  mapTheme={resolvedTheme}
                 />
               </div>
               <p className="text-xs text-muted-foreground mt-2">Blue pin: proposal. Coloured dots: existing assets.</p>

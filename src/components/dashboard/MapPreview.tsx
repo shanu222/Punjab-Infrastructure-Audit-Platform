@@ -79,7 +79,7 @@ export function MapPreview({ assets, loading }: Props) {
         </Link>
       </div>
       <div className="relative rounded-lg border border-border bg-gradient-to-b from-muted/40 to-muted/20 aspect-[16/9] max-h-[220px] sm:max-h-[260px] overflow-hidden">
-        <div className="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_30%_40%,hsl(var(--primary)/0.25),transparent_55%)]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-transparent to-secondary/10 opacity-90" />
         {list.slice(0, 80).map((p) => {
           const { x, y } = project(p, b);
           const rl = (p.risk_level || "UNKNOWN").toUpperCase();
@@ -89,7 +89,7 @@ export function MapPreview({ assets, loading }: Props) {
               key={String(p.asset_id)}
               to={`/app/assets/${p.asset_id}`}
               title={`${p.type || "Asset"} · ${p.district || ""} · ${rl}`}
-              className="absolute block rounded-full border-2 border-white/80 shadow-sm hover:scale-125 transition-transform z-10"
+              className="absolute block rounded-full border-2 border-card shadow-sm hover:scale-125 transition-transform z-10"
               style={{
                 left: `${x}%`,
                 top: `${y}%`,

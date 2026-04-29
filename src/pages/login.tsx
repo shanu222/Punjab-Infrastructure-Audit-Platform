@@ -16,6 +16,7 @@ import {
   postClientLoginLog,
   collectDeviceInfo,
 } from "@/services/authService.js";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 function redirectPathForRole(role: PortalRole): string {
   if (role === "engineer") return "/app/audit";
@@ -131,11 +132,14 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/[0.07] via-background to-secondary/[0.08] flex items-center justify-center p-4 sm:p-6">
+    <div className="relative min-h-screen bg-gradient-to-br from-primary/[0.07] via-background to-secondary/[0.08] flex items-center justify-center p-4 sm:p-6 transition-colors duration-300">
+      <div className="absolute right-4 top-4 z-10 sm:right-6 sm:top-6">
+        <ThemeToggle mode="toggle" />
+      </div>
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-5xl"
+        className="w-full max-w-5xl transition-colors duration-300"
       >
         <header className="text-center mb-8 md:mb-10">
           <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-primary rounded-2xl mb-4 md:mb-6 shadow-[var(--shadow-card-hover)] ring-1 ring-primary/20">
@@ -149,7 +153,7 @@ export default function LoginPage() {
           </p>
         </header>
 
-        <div className="bg-card rounded-2xl shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-card-hover)] transition-shadow duration-300 p-6 sm:p-8 md:p-10 border border-border/80">
+        <div className="bg-card rounded-2xl shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-card-hover)] transition-all duration-300 p-6 sm:p-8 md:p-10 border border-border">
           <h2 className="text-xl md:text-2xl font-semibold text-center mb-6 md:mb-8 text-foreground">
             Select your role
           </h2>

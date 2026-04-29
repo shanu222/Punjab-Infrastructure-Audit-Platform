@@ -26,7 +26,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/app/components/ui/dropdown-menu";
-import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { cn } from "@/app/components/ui/utils";
 
 type NavItem = {

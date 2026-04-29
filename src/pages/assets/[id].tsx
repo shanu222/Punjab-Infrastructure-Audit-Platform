@@ -10,6 +10,7 @@ import {
   ShieldOff,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useTheme } from "@/context/ThemeContext";
 import {
   fetchAssetAiInsights,
   fetchAssetById,
@@ -52,6 +53,7 @@ const MONGO_ID_RE = /^[a-f\d]{24}$/i;
 export function AssetDetailPage() {
   const { id } = useParams();
   const user = getStoredUser();
+  const { resolvedTheme } = useTheme();
   const canEngineer = user?.role === "admin" || user?.role === "engineer";
 
   const [asset, setAsset] = useState<AssetRecord | null>(null);
@@ -281,6 +283,7 @@ export function AssetDetailPage() {
                 lat={lat}
                 lng={lng}
                 label={asset.display_name}
+                mapTheme={resolvedTheme}
               />
             </section>
 

@@ -15,6 +15,12 @@ import {
   URBAN_GEOJSON,
 } from "./mapUtils";
 import { markerClassName, markerHtmlForAsset } from "./AssetMarker";
+import {
+  MAP_ATTRIBUTION_DARK,
+  MAP_ATTRIBUTION_LIGHT,
+  MAP_TILE_DARK,
+  MAP_TILE_LIGHT,
+} from "@/utils/mapTiles";
 
 type Props = {
   assets: GisMapAsset[];
@@ -24,6 +30,8 @@ type Props = {
   /** Increment after each API load to zoom bounds to filtered results. */
   fitTick: number;
   onSelect: (asset: GisMapAsset | null) => void;
+  /** Sync basemap with app theme */
+  mapTheme?: "light" | "dark";
 };
 
 function isValidCoord(lat: unknown, lng: unknown): lat is number {
@@ -44,10 +52,14 @@ export function MapCanvas({
   highlightDistrictsLower,
   fitTick,
   onSelect,
+  mapTheme = "light",
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
+  const tileLayerRef = useRef<L.TileLayer | null>(null);
   const clusterRef = useRef<L.LayerGroup | null>(null);
+  /** Theme currently shown on the Leaflet basemap (avoids redundant tile swaps). */
+  const appliedBasemapRef = useRef<"light" | "dark" | null>(null);
   const lastFitTickRef = useRef(0);
   const overlayRef = useRef<{
     flood: L.GeoJSON;
@@ -107,11 +119,13 @@ export function MapCanvas({
       preferCanvas: true,
     }).setView(PUNJAB_CENTER, PUNJAB_ZOOM);
 
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    const isDark = mapTheme === "dark";
+    const base = L.tileLayer(isDark ? MAP_TILE_DARK : MAP_TILE_LIGHT, {
+      attribution: isDark ? MAP_ATTRIBUTION_DARK : MAP_ATTRIBUTION_LIGHT,
       maxZoom: 19,
     }).addTo(map);
+    tileLayerRef.current = base;
+    appliedBasemapRef.current = mapTheme === "dark" ? "dark" : "light";
 
     const cluster = (
       L as unknown as {
@@ -173,8 +187,26 @@ export function MapCanvas({
       mapRef.current = null;
       clusterRef.current = null;
       overlayRef.current = null;
+      tileLayerRef.current = null;
+      appliedBasemapRef.current = null;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- map mounts once; basemap swaps in effect below
   }, []);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    const current = tileLayerRef.current;
+    if (!map || !current) return;
+    const next = mapTheme === "dark" ? "dark" : "light";
+    if (appliedBasemapRef.current === next) return;
+    appliedBasemapRef.current = next;
+    const isDark = mapTheme === "dark";
+    const nextUrl = isDark ? MAP_TILE_DARK : MAP_TILE_LIGHT;
+    const nextAttr = isDark ? MAP_ATTRIBUTION_DARK : MAP_ATTRIBUTION_LIGHT;
+    map.removeLayer(current);
+    const layer = L.tileLayer(nextUrl, { attribution: nextAttr, maxZoom: 19 }).addTo(map);
+    tileLayerRef.current = layer;
+  }, [mapTheme]);
 
   useEffect(() => {
     const map = mapRef.current;

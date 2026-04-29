@@ -78,9 +78,11 @@ export function RiskChart({ distribution, loading }: Props) {
                 borderRadius: "8px",
                 border: "1px solid var(--border)",
                 background: "var(--popover)",
+                color: "var(--popover-foreground)",
               }}
+              labelStyle={{ color: "var(--muted-foreground)" }}
             />
-            <Legend />
+            <Legend wrapperStyle={{ color: "var(--foreground)" }} />
           </PieChart>
         </ResponsiveContainer>
       </div>

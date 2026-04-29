@@ -163,7 +163,7 @@ export function AssetRegistryPage() {
                     key={r._id}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="border-b border-border/60 hover:bg-muted/40 transition-colors"
+                    className="border-b border-border/60 odd:bg-transparent even:bg-muted/20 hover:bg-muted/50 transition-colors duration-300"
                   >
                     <td className="px-4 py-3 font-medium text-foreground">
                       {r.display_name || `${r.type?.replace(/_/g, " ")} — ${r.district}`}

@@ -2,6 +2,12 @@ import { useCallback, useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { PUNJAB_CENTER, PUNJAB_ZOOM } from "@/components/map/mapUtils";
+import {
+  MAP_ATTRIBUTION_DARK,
+  MAP_ATTRIBUTION_LIGHT,
+  MAP_TILE_DARK,
+  MAP_TILE_LIGHT,
+} from "@/utils/mapTiles";
 
 export type NearbyPin = {
   id: string;
@@ -18,11 +24,22 @@ type Props = {
   nearbyAssets?: NearbyPin[];
   className?: string;
   readOnly?: boolean;
+  mapTheme?: "light" | "dark";
 };
 
-export function MapSelector({ lat, lng, onLocationChange, nearbyAssets = [], className = "", readOnly = false }: Props) {
+export function MapSelector({
+  lat,
+  lng,
+  onLocationChange,
+  nearbyAssets = [],
+  className = "",
+  readOnly = false,
+  mapTheme = "light",
+}: Props) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
+  const tileRef = useRef<L.TileLayer | null>(null);
+  const appliedBasemapRef = useRef<"light" | "dark" | null>(null);
   const pinRef = useRef<L.Marker | null>(null);
   const nearbyLayerRef = useRef<L.LayerGroup | null>(null);
   const onLocRef = useRef(onLocationChange);
@@ -35,10 +52,13 @@ export function MapSelector({ lat, lng, onLocationChange, nearbyAssets = [], cla
     if (!el || mapRef.current) return;
 
     const map = L.map(el, { zoomControl: true, preferCanvas: true }).setView(PUNJAB_CENTER, PUNJAB_ZOOM);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: '&copy; OpenStreetMap',
+    const isDark = mapTheme === "dark";
+    const tl = L.tileLayer(isDark ? MAP_TILE_DARK : MAP_TILE_LIGHT, {
+      attribution: isDark ? MAP_ATTRIBUTION_DARK : MAP_ATTRIBUTION_LIGHT,
       maxZoom: 19,
     }).addTo(map);
+    tileRef.current = tl;
+    appliedBasemapRef.current = isDark ? "dark" : "light";
 
     const nearbyLayer = L.layerGroup().addTo(map);
     nearbyLayerRef.current = nearbyLayer;
@@ -60,8 +80,26 @@ export function MapSelector({ lat, lng, onLocationChange, nearbyAssets = [], cla
       mapRef.current = null;
       pinRef.current = null;
       nearbyLayerRef.current = null;
+      tileRef.current = null;
+      appliedBasemapRef.current = null;
     };
   }, []);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    const current = tileRef.current;
+    if (!map || !current) return;
+    const next = mapTheme === "dark" ? "dark" : "light";
+    if (appliedBasemapRef.current === next) return;
+    appliedBasemapRef.current = next;
+    const isDark = mapTheme === "dark";
+    map.removeLayer(current);
+    const layer = L.tileLayer(isDark ? MAP_TILE_DARK : MAP_TILE_LIGHT, {
+      attribution: isDark ? MAP_ATTRIBUTION_DARK : MAP_ATTRIBUTION_LIGHT,
+      maxZoom: 19,
+    }).addTo(map);
+    tileRef.current = layer;
+  }, [mapTheme]);
 
   const setPin = useCallback((la: number, ln: number) => {
     const map = mapRef.current;
@@ -69,9 +107,10 @@ export function MapSelector({ lat, lng, onLocationChange, nearbyAssets = [], cla
     if (pinRef.current) {
       map.removeLayer(pinRef.current);
     }
+    const border = mapTheme === "dark" ? "#1e293b" : "#ffffff";
     const icon = L.divIcon({
       className: "future-proposal-pin",
-      html: `<div style="width:22px;height:22px;border-radius:50%;background:#2563eb;border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35)"></div>`,
+      html: `<div style="width:22px;height:22px;border-radius:50%;background:#2563eb;border:3px solid ${border};box-shadow:0 1px 4px rgba(0,0,0,.35)"></div>`,
       iconSize: [22, 22],
       iconAnchor: [11, 11],
     });
@@ -84,7 +123,7 @@ export function MapSelector({ lat, lng, onLocationChange, nearbyAssets = [], cla
       onLocRef.current(p.lat, p.lng);
     });
     map.setView([la, ln], Math.max(map.getZoom(), 11), { animate: true });
-  }, []);
+  }, [mapTheme]);
 
   useEffect(() => {
     if (lat != null && lng != null && !Number.isNaN(lat) && !Number.isNaN(lng)) {
