@@ -131,14 +131,14 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10 flex items-center justify-center p-4 sm:p-6">
+    <div className="min-h-screen bg-gradient-to-br from-primary/[0.07] via-background to-secondary/[0.08] flex items-center justify-center p-4 sm:p-6">
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-5xl"
       >
         <header className="text-center mb-8 md:mb-10">
-          <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-primary rounded-2xl mb-4 md:mb-6 shadow-lg">
+          <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-primary rounded-2xl mb-4 md:mb-6 shadow-[var(--shadow-card-hover)] ring-1 ring-primary/20">
             <Building2 className="w-9 h-9 md:w-12 md:h-12 text-white" />
           </div>
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-foreground mb-2 md:mb-3 tracking-tight">
@@ -149,7 +149,7 @@ export default function LoginPage() {
           </p>
         </header>
 
-        <div className="bg-card rounded-2xl shadow-xl p-6 sm:p-8 md:p-10 border border-border">
+        <div className="bg-card rounded-2xl shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-card-hover)] transition-shadow duration-300 p-6 sm:p-8 md:p-10 border border-border/80">
           <h2 className="text-xl md:text-2xl font-semibold text-center mb-6 md:mb-8 text-foreground">
             Select your role
           </h2>

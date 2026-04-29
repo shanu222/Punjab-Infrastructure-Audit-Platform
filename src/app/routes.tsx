@@ -1,16 +1,41 @@
+import { Suspense, lazy } from "react";
 import { createBrowserRouter, Navigate } from "react-router";
 import { Layout } from "./components/Layout";
 import LoginPage from "@/pages/login";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
-import { Dashboard } from "./components/Dashboard";
-import { MapView } from "./components/MapView";
-import { AssetDetail } from "./components/AssetDetail";
-import { AuditForm } from "./components/AuditForm";
-import { AIRiskDashboard } from "./components/AIRiskDashboard";
-import { ReportGeneration } from "./components/ReportGeneration";
-import { FutureInfraApproval } from "./components/FutureInfraApproval";
-import { AdminPanel } from "./components/AdminPanel";
 import { NotFound } from "./components/NotFound";
+import { Loader2 } from "lucide-react";
+
+const Dashboard = lazy(() =>
+  import("./components/Dashboard").then((m) => ({ default: m.Dashboard })),
+);
+const MapView = lazy(() => import("./components/MapView").then((m) => ({ default: m.MapView })));
+const AssetRegistry = lazy(() =>
+  import("./components/AssetRegistry").then((m) => ({ default: m.AssetRegistry })),
+);
+const AssetDetail = lazy(() =>
+  import("./components/AssetDetail").then((m) => ({ default: m.AssetDetail })),
+);
+const AuditForm = lazy(() => import("./components/AuditForm").then((m) => ({ default: m.AuditForm })));
+const AIRiskDashboard = lazy(() =>
+  import("./components/AIRiskDashboard").then((m) => ({ default: m.AIRiskDashboard })),
+);
+const ReportGeneration = lazy(() =>
+  import("./components/ReportGeneration").then((m) => ({ default: m.ReportGeneration })),
+);
+const FutureInfraApproval = lazy(() =>
+  import("./components/FutureInfraApproval").then((m) => ({ default: m.FutureInfraApproval })),
+);
+const AdminPanel = lazy(() => import("./components/AdminPanel").then((m) => ({ default: m.AdminPanel })));
+
+function RouteFallback() {
+  return (
+    <div className="flex min-h-[40vh] flex-col items-center justify-center gap-3 text-muted-foreground">
+      <Loader2 className="size-8 animate-spin text-primary" aria-hidden />
+      <p className="text-sm font-medium">Loading…</p>
+    </div>
+  );
+}
 
 export const router = createBrowserRouter([
   {
@@ -28,14 +53,78 @@ export const router = createBrowserRouter([
       {
         Component: Layout,
         children: [
-          { index: true, Component: Dashboard },
-          { path: "map", Component: MapView },
-          { path: "assets/:id", Component: AssetDetail },
-          { path: "audit", Component: AuditForm },
-          { path: "ai-analysis", Component: AIRiskDashboard },
-          { path: "reports/:id", Component: ReportGeneration },
-          { path: "future-approval", Component: FutureInfraApproval },
-          { path: "admin", Component: AdminPanel },
+          {
+            index: true,
+            element: (
+              <Suspense fallback={<RouteFallback />}>
+                <Dashboard />
+              </Suspense>
+            ),
+          },
+          {
+            path: "map",
+            element: (
+              <Suspense fallback={<RouteFallback />}>
+                <MapView />
+              </Suspense>
+            ),
+          },
+          {
+            path: "assets",
+            element: (
+              <Suspense fallback={<RouteFallback />}>
+                <AssetRegistry />
+              </Suspense>
+            ),
+          },
+          {
+            path: "assets/:id",
+            element: (
+              <Suspense fallback={<RouteFallback />}>
+                <AssetDetail />
+              </Suspense>
+            ),
+          },
+          {
+            path: "audit",
+            element: (
+              <Suspense fallback={<RouteFallback />}>
+                <AuditForm />
+              </Suspense>
+            ),
+          },
+          {
+            path: "ai-analysis",
+            element: (
+              <Suspense fallback={<RouteFallback />}>
+                <AIRiskDashboard />
+              </Suspense>
+            ),
+          },
+          {
+            path: "reports/:id",
+            element: (
+              <Suspense fallback={<RouteFallback />}>
+                <ReportGeneration />
+              </Suspense>
+            ),
+          },
+          {
+            path: "future-approval",
+            element: (
+              <Suspense fallback={<RouteFallback />}>
+                <FutureInfraApproval />
+              </Suspense>
+            ),
+          },
+          {
+            path: "admin",
+            element: (
+              <Suspense fallback={<RouteFallback />}>
+                <AdminPanel />
+              </Suspense>
+            ),
+          },
         ],
       },
     ],

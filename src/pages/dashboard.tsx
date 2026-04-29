@@ -14,6 +14,7 @@ import { MapPreview, type MapAsset } from "@/components/dashboard/MapPreview";
 import { InsightsPanel, type AiInsightsShape } from "@/components/dashboard/InsightsPanel";
 import { ActivityFeed, type ActivityItem } from "@/components/dashboard/ActivityFeed";
 import { getStoredUser } from "@/utils/authStorage.js";
+import { PageHeader } from "@/components/common/PageHeader";
 
 const REFRESH_MS = 30_000;
 
@@ -85,41 +86,34 @@ export function DashboardPage() {
 
   return (
     <div className="p-4 sm:p-6 space-y-6 md:space-y-8 max-w-[1600px] mx-auto">
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-semibold text-foreground mb-1">
-            Analytics dashboard
-          </h1>
-          <p className="text-muted-foreground text-sm sm:text-base">
-            Live infrastructure and disaster-risk intelligence
-          </p>
-          {user?.role === "admin" && (
-            <p className="mt-2 inline-flex items-center gap-2 text-xs font-medium text-primary bg-primary/10 border border-primary/20 rounded-full px-3 py-1">
-              <Shield className="w-3.5 h-3.5" />
-              Administrator view — full system metrics
-            </p>
-          )}
-          {user?.role === "government" && (
-            <p className="mt-2 text-xs text-muted-foreground">
-              Government view — statewide analytics and alerts
-            </p>
-          )}
-          {user?.role === "engineer" && (
-            <p className="mt-2 text-xs text-muted-foreground">
-              Engineer view — your audit workload with Punjab-wide context
-            </p>
-          )}
-        </div>
-        <button
-          type="button"
-          onClick={handleRefresh}
-          disabled={refreshing || loading}
-          className="inline-flex items-center justify-center gap-2 self-start px-4 py-2.5 rounded-lg border border-border bg-card text-sm font-medium hover:bg-muted/60 transition-colors disabled:opacity-50 min-h-[44px]"
-        >
-          <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
-          Refresh
-        </button>
-      </div>
+      <PageHeader
+        title="Analytics dashboard"
+        description="Live infrastructure and disaster-risk intelligence for Punjab."
+        actions={
+          <button
+            type="button"
+            onClick={handleRefresh}
+            disabled={refreshing || loading}
+            className="inline-flex items-center justify-center gap-2 self-start px-4 py-2.5 rounded-xl border border-border bg-card text-sm font-semibold hover:bg-muted/60 transition-all active:scale-[0.98] disabled:opacity-50 min-h-11 shadow-sm"
+          >
+            <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
+            Refresh
+          </button>
+        }
+      />
+
+      {user?.role === "admin" && (
+        <p className="-mt-2 inline-flex items-center gap-2 text-xs font-medium text-primary bg-primary/10 border border-primary/20 rounded-full px-3 py-1">
+          <Shield className="w-3.5 h-3.5" />
+          Administrator view — full system metrics
+        </p>
+      )}
+      {user?.role === "government" && (
+        <p className="-mt-2 text-xs text-muted-foreground">Government view — statewide analytics and alerts</p>
+      )}
+      {user?.role === "engineer" && (
+        <p className="-mt-2 text-xs text-muted-foreground">Engineer view — your audit workload with Punjab-wide context</p>
+      )}
 
       {error && !stats && (
         <div className="rounded-xl border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
