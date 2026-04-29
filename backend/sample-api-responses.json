@@ -116,7 +116,10 @@
         "earthquake_score": 55,
         "heat_score": 48,
         "overall_risk": "HIGH",
-        "media_urls": ["https://bucket.s3.ap-south-1.amazonaws.com/media/photo1.jpg"],
+        "media_urls": [
+          "https://infra-audit-platform-punjab.s3.ap-south-1.amazonaws.com/infra-audit/images/1714473600000-photo.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=…"
+        ],
+        "report_pdf": "https://infra-audit-platform-punjab.s3.ap-south-1.amazonaws.com/infra-audit/reports/1714474000000-report.pdf?X-Amz-Algorithm=…",
         "notes": "Expansion joints show distress; drainage partially blocked upstream.",
         "createdAt": "2026-04-30T12:30:00.000Z"
       },
@@ -152,20 +155,35 @@
           "earthquake_score": 55,
           "heat_score": 48,
           "overall_risk": "HIGH",
-          "media_urls": ["https://bucket.s3.ap-south-1.amazonaws.com/media/photo1.jpg"],
+          "media_urls": [
+            "https://infra-audit-platform-punjab.s3.ap-south-1.amazonaws.com/infra-audit/images/1714473600000-photo.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=…"
+          ],
+          "report_pdf": "https://infra-audit-platform-punjab.s3.ap-south-1.amazonaws.com/infra-audit/reports/1714474000000-report.pdf?X-Amz-Algorithm=…",
           "notes": "Expansion joints show distress; drainage partially blocked upstream.",
           "createdAt": "2026-04-30T12:30:00.000Z"
         }
       ]
     }
   },
-  "POST /api/uploads/image": {
+  "POST /api/upload (multipart: file + form field folder=images|videos|reports)": {
     "success": true,
     "data": {
-      "url": "https://your-bucket.s3.ap-south-1.amazonaws.com/media/1714473600000-a1b2c3d4e5f6.jpg",
+      "key": "infra-audit/images/1714473600000-site-photo.jpg",
+      "url": "https://infra-audit-platform-punjab.s3.ap-south-1.amazonaws.com/infra-audit/images/1714473600000-site-photo.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=…",
+      "url_expires_in_seconds": 604800,
+      "folder": "images",
       "originalName": "site-photo.jpg",
       "mimeType": "image/jpeg",
       "size": 482931
+    }
+  },
+  "POST /api/audits/:auditId/report-pdf (multipart field file, PDF only)": {
+    "success": true,
+    "data": {
+      "audit_id": "674c3d4e5f6789012345678",
+      "report_pdf_key": "infra-audit/reports/1714474000000-AuditReport.pdf",
+      "report_pdf_url": "https://infra-audit-platform-punjab.s3.ap-south-1.amazonaws.com/infra-audit/reports/…",
+      "url_expires_in_seconds": 604800
     }
   },
   "error_example": {

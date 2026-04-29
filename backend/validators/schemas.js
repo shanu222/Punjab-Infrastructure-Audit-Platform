@@ -35,8 +35,12 @@ const createAuditSchema = Joi.object({
   flood_score: Joi.number().min(0).max(100).required(),
   earthquake_score: Joi.number().min(0).max(100).required(),
   heat_score: Joi.number().min(0).max(100).required(),
-  media_urls: Joi.array().items(Joi.string().uri().max(2048)).max(50).default([]),
+  media_urls: Joi.array().items(Joi.string().max(2048)).max(50).default([]),
   notes: Joi.string().max(20000).allow(''),
+});
+
+const uploadFolderSchema = Joi.object({
+  folder: Joi.string().valid('images', 'videos', 'reports').required(),
 });
 
 module.exports = {
@@ -44,4 +48,5 @@ module.exports = {
   loginSchema,
   createAssetSchema,
   createAuditSchema,
+  uploadFolderSchema,
 };

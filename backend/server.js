@@ -32,7 +32,7 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/assets', assetRoutes);
 app.use('/api/audits', auditRoutes);
-app.use('/api/uploads', uploadRoutes);
+app.use('/api/upload', uploadRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

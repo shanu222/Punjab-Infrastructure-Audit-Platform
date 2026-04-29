@@ -21,6 +21,8 @@ const auditSchema = new mongoose.Schema(
     heat_score: { type: Number, required: true, min: 0, max: 100 },
     overall_risk: { type: String, enum: RISK_LEVELS, required: true },
     media_urls: [{ type: String, trim: true }],
+    /** S3 object key (e.g. infra-audit/reports/...); API returns presigned HTTPS URL in responses. */
+    report_pdf: { type: String, trim: true },
     notes: { type: String, trim: true, default: '' },
   },
   { timestamps: { createdAt: 'createdAt', updatedAt: false } }
