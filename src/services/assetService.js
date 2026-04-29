@@ -1,4 +1,4 @@
-import { apiRequest } from "../utils/api.js";
+import { apiRequest } from "@/utils/api";
 
 export async function fetchAssetById(id) {
   return apiRequest(`/api/assets/${encodeURIComponent(id)}`);

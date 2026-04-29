@@ -9,6 +9,7 @@ import {
   setAuth,
   setRememberedEmail,
   getRememberedEmail,
+  getToken,
 } from "@/utils/authStorage.js";
 import {
   login as loginApi,
@@ -37,6 +38,12 @@ export default function LoginPage() {
     const saved = getRememberedEmail();
     if (saved) setEmail(saved);
   }, []);
+
+  useEffect(() => {
+    if (getToken()) {
+      navigate("/app", { replace: true });
+    }
+  }, [navigate]);
 
   const runRoleHint = useCallback(async (value: string) => {
     const trimmed = value.trim().toLowerCase();
@@ -112,7 +119,10 @@ export default function LoginPage() {
       toast.success("Signed in successfully");
       navigate(redirectPathForRole(user.role as PortalRole), { replace: true });
     } catch (err: unknown) {
-      const e = err as { status?: number; message?: string };
+      const e = err as { status?: number; message?: string; isNetworkError?: boolean };
+      if (e.isNetworkError) {
+        return;
+      }
       if (e.status === 403) {
         toast.error("Role mismatch", {
           description: e.message || "Selected role does not match your account.",

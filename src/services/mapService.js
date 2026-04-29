@@ -1,4 +1,4 @@
-import { apiRequest } from "../utils/api.js";
+import { apiRequest } from "@/utils/api";
 
 /**
  * @param {Record<string, string | undefined>} params

@@ -42,6 +42,10 @@ export const router = createBrowserRouter([
     path: "/",
     element: <Navigate to="/login" replace />,
   },
+  { path: "/dashboard", element: <Navigate to="/app" replace /> },
+  { path: "/map", element: <Navigate to="/app/map" replace /> },
+  { path: "/audit", element: <Navigate to="/app/audit" replace /> },
+  { path: "/admin", element: <Navigate to="/app/admin" replace /> },
   {
     path: "/login",
     Component: LoginPage,

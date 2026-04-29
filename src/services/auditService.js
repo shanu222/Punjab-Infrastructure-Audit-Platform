@@ -1,4 +1,4 @@
-import { apiRequest } from "../utils/api.js";
+import { apiRequest } from "@/utils/api";
 import { getToken } from "../utils/authStorage.js";
 
 const BASE = () => import.meta.env.VITE_API_BASE_URL || "";

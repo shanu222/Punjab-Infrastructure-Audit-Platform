@@ -1,4 +1,4 @@
-import { apiRequest } from "../utils/api.js";
+import { apiRequest } from "@/utils/api";
 
 export async function fetchDashboardStats() {
   return apiRequest("/api/dashboard/stats");

@@ -1,4 +1,4 @@
-import { apiRequest } from "../utils/api.js";
+import { apiRequest } from "@/utils/api";
 
 export async function login({ email, password, role }) {
   return apiRequest("/api/auth/login", {

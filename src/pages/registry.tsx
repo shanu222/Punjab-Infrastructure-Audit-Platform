@@ -3,7 +3,7 @@ import { Link } from "react-router";
 import { motion } from "motion/react";
 import { Search, MapPin, RefreshCw, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
-import { apiRequest } from "@/utils/api.js";
+import { apiRequest } from "@/utils/api";
 import { PageHeader } from "@/components/common/PageHeader";
 import { AppCard } from "@/components/common/AppCard";
 import { RiskBadge } from "@/components/common/RiskBadge";

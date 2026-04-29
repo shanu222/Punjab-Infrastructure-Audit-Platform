@@ -21,10 +21,23 @@ const futureRoutes = require('./routes/futureRoutes');
 const app = express();
 
 app.use(helmet());
+const corsOriginOption = () => {
+  const raw = process.env.CORS_ORIGIN;
+  if (raw === '*') return '*';
+  if (!raw || raw === 'true') return true;
+  const list = raw
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (list.length === 0) return true;
+  if (list.length === 1) return list[0];
+  return list;
+};
+const resolvedCorsOrigin = corsOriginOption();
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN || true,
-    credentials: true,
+    origin: resolvedCorsOrigin,
+    credentials: resolvedCorsOrigin !== '*',
   })
 );
 app.use(express.json({ limit: '5mb' }));
