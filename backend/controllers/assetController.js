@@ -109,4 +109,66 @@ async function patchAssetFlags(req, res) {
   });
 }
 
-module.exports = { listAssets, createAsset, getAssetById, patchAssetFlags, formatAsset };
+async function updateAsset(req, res) {
+  const { id } = req.params;
+  if (!mongoose.isValidObjectId(id)) {
+    throw new AppError('Invalid asset id', 400);
+  }
+
+  const updates = { ...req.body };
+  const asset = await Asset.findByIdAndUpdate(id, { $set: updates }, { new: true, runValidators: true }).populate(
+    'created_by',
+    'name email role department'
+  );
+
+  if (!asset) {
+    throw new AppError('Asset not found', 404);
+  }
+
+  await activityLogService.record({
+    user_id: new mongoose.Types.ObjectId(req.user.id),
+    action: 'admin_asset_updated',
+    entity: `Asset:${asset._id}`,
+    ip_address: getClientIp(req),
+  });
+
+  res.json({
+    success: true,
+    data: { asset: formatAsset(asset) },
+  });
+}
+
+async function deleteAsset(req, res) {
+  const { id } = req.params;
+  if (!mongoose.isValidObjectId(id)) {
+    throw new AppError('Invalid asset id', 400);
+  }
+
+  const asset = await Asset.findById(id);
+  if (!asset) {
+    throw new AppError('Asset not found', 404);
+  }
+
+  const Audit = require('../models/Audit');
+  await Audit.deleteMany({ asset_id: asset._id });
+  await Asset.findByIdAndDelete(id);
+
+  await activityLogService.record({
+    user_id: new mongoose.Types.ObjectId(req.user.id),
+    action: 'admin_asset_deleted',
+    entity: `Asset:${id}`,
+    ip_address: getClientIp(req),
+  });
+
+  res.json({ success: true, data: { id } });
+}
+
+module.exports = {
+  listAssets,
+  createAsset,
+  getAssetById,
+  patchAssetFlags,
+  updateAsset,
+  deleteAsset,
+  formatAsset,
+};

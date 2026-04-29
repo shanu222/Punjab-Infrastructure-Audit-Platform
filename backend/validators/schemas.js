@@ -98,6 +98,46 @@ const assetPatchFlagsSchema = Joi.object({
   is_flagged_critical: Joi.boolean().required(),
 });
 
+const adminUserCreateSchema = Joi.object({
+  name: Joi.string().min(2).max(120).required(),
+  email: Joi.string().email().required(),
+  password: Joi.string().min(8).max(128).required(),
+  role: Joi.string().valid('admin', 'engineer', 'government').required(),
+  department: Joi.string().max(160).allow('').default(''),
+  is_active: Joi.boolean().default(true),
+});
+
+const adminUserUpdateSchema = Joi.object({
+  name: Joi.string().min(2).max(120),
+  email: Joi.string().email(),
+  password: Joi.string().min(8).max(128).allow(''),
+  role: Joi.string().valid('admin', 'engineer', 'government'),
+  department: Joi.string().max(160).allow(''),
+  is_active: Joi.boolean(),
+})
+  .min(1)
+  .messages({ 'object.min': 'At least one field is required' });
+
+const adminAssetUpdateSchema = Joi.object({
+  type: Joi.string().valid(...ASSET_TYPES),
+  location: Joi.object({
+    lat: Joi.number().min(-90).max(90).required(),
+    lng: Joi.number().min(-180).max(180).required(),
+  }),
+  district: Joi.string().min(1).max(120),
+  construction_year: Joi.number().integer().min(1800).max(2100),
+  material: Joi.string().max(200).allow(''),
+  structural_type: Joi.string().max(200).allow(''),
+  risk_score: Joi.number().min(0).max(100).allow(null),
+  is_flagged_critical: Joi.boolean(),
+})
+  .min(1)
+  .messages({ 'object.min': 'At least one field is required' });
+
+const adminAuditPatchSchema = Joi.object({
+  admin_status: Joi.string().valid('pending', 'approved', 'flagged').required(),
+});
+
 module.exports = {
   registerSchema,
   loginSchema,
@@ -108,4 +148,8 @@ module.exports = {
   uploadFolderSchema,
   futureAnalysisSchema,
   assetPatchFlagsSchema,
+  adminUserCreateSchema,
+  adminUserUpdateSchema,
+  adminAssetUpdateSchema,
+  adminAuditPatchSchema,
 };

@@ -83,6 +83,16 @@ async function login(req, res) {
     throw new AppError('Invalid email or password', 401);
   }
 
+  if (user.is_active === false) {
+    await activityLogService.record({
+      user_id: user._id,
+      action: 'login_failed_inactive',
+      entity: 'Auth',
+      ip_address: getClientIp(req),
+    });
+    throw new AppError('Account is disabled. Contact an administrator.', 403);
+  }
+
   const match = await bcrypt.compare(password, user.password);
   if (!match) {
     await activityLogService.record({

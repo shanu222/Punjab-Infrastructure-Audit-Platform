@@ -2,7 +2,12 @@ const express = require('express');
 const asyncHandler = require('../middleware/asyncHandler');
 const { protect } = require('../middleware/auth');
 const { requireRoles } = require('../middleware/rbac');
+const { validateBody } = require('../middleware/validate');
+const { adminAuditPatchSchema } = require('../validators/schemas');
 const {
+  listAudits,
+  getAuditDetail,
+  patchAdminAudit,
   createAudit,
   getAuditsByAsset,
   generateAuditReport,
@@ -12,6 +17,16 @@ const {
 } = require('../controllers/auditController');
 
 const router = express.Router();
+
+router.get('/', protect, requireRoles('admin'), asyncHandler(listAudits));
+router.get('/detail/:auditId', protect, requireRoles('admin'), asyncHandler(getAuditDetail));
+router.put(
+  '/:auditId',
+  protect,
+  requireRoles('admin'),
+  validateBody(adminAuditPatchSchema),
+  asyncHandler(patchAdminAudit)
+);
 
 router.post(
   '/',

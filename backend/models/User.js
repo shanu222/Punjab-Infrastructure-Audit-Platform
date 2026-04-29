@@ -19,6 +19,7 @@ const userSchema = new mongoose.Schema(
       default: 'engineer',
     },
     department: { type: String, trim: true, default: '' },
+    is_active: { type: Boolean, default: true, index: true },
   },
   { timestamps: { createdAt: 'createdAt', updatedAt: false } }
 );
@@ -30,6 +31,7 @@ userSchema.methods.toSafeJSON = function toSafeJSON() {
     email: this.email,
     role: this.role,
     department: this.department || '',
+    is_active: this.is_active !== false,
     createdAt: this.createdAt,
   };
 };

@@ -63,6 +63,13 @@ const auditSchema = new mongoose.Schema(
     notes: { type: String, trim: true, default: '' },
     /** Device GPS at time of submission (field capture). */
     capture_location: { type: captureLocationSchema, default: undefined },
+    /** Admin oversight (field audits remain authoritative; this is workflow only). */
+    admin_status: {
+      type: String,
+      enum: ['pending', 'approved', 'flagged'],
+      default: 'pending',
+      index: true,
+    },
   },
   { timestamps: { createdAt: 'createdAt', updatedAt: false } }
 );

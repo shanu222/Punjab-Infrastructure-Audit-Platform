@@ -83,6 +83,119 @@ async function enrichAuditForResponse(audit) {
   return plain;
 }
 
+function parseAuditPagination(req) {
+  const page = Math.max(1, parseInt(String(req.query.page || '1'), 10) || 1);
+  const limit = Math.min(100, Math.max(1, parseInt(String(req.query.limit || '20'), 10) || 20));
+  return { page, limit, skip: (page - 1) * limit };
+}
+
+async function listAudits(req, res) {
+  const { page, limit, skip } = parseAuditPagination(req);
+  const filter = {};
+
+  if (req.query.engineer_id && mongoose.isValidObjectId(req.query.engineer_id)) {
+    filter.engineer_id = new mongoose.Types.ObjectId(req.query.engineer_id);
+  }
+  if (req.query.overall_risk) {
+    filter.overall_risk = String(req.query.overall_risk).toUpperCase();
+  }
+  if (req.query.admin_status) {
+    const s = String(req.query.admin_status);
+    if (s === 'pending') {
+      filter.$or = [{ admin_status: 'pending' }, { admin_status: { $exists: false } }, { admin_status: null }];
+    } else {
+      filter.admin_status = s;
+    }
+  }
+  if (req.query.from || req.query.to) {
+    filter.createdAt = {};
+    if (req.query.from) {
+      const d = new Date(req.query.from);
+      if (!Number.isNaN(d.getTime())) filter.createdAt.$gte = d;
+    }
+    if (req.query.to) {
+      const d = new Date(req.query.to);
+      if (!Number.isNaN(d.getTime())) filter.createdAt.$lte = d;
+    }
+  }
+
+  const [total, audits] = await Promise.all([
+    Audit.countDocuments(filter),
+    Audit.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate('asset_id', 'district type location risk_score')
+      .populate('engineer_id', 'name email role department')
+      .lean(),
+  ]);
+
+  const auditsOut = await Promise.all(audits.map((a) => enrichAuditForResponse(a)));
+
+  res.json({
+    success: true,
+    data: { audits: auditsOut, page, limit, total },
+  });
+}
+
+async function getAuditDetail(req, res) {
+  const { auditId } = req.params;
+  if (!mongoose.isValidObjectId(auditId)) {
+    throw new AppError('Invalid audit id', 400);
+  }
+
+  const populated = await Audit.findById(auditId)
+    .populate('asset_id')
+    .populate('engineer_id', 'name email role department');
+
+  if (!populated) {
+    throw new AppError('Audit not found', 404);
+  }
+
+  const auditOut = await enrichAuditForResponse(populated);
+
+  res.json({
+    success: true,
+    data: { audit: auditOut },
+  });
+}
+
+async function patchAdminAudit(req, res) {
+  const { auditId } = req.params;
+  if (!mongoose.isValidObjectId(auditId)) {
+    throw new AppError('Invalid audit id', 400);
+  }
+
+  const { admin_status } = req.body;
+
+  const audit = await Audit.findByIdAndUpdate(
+    auditId,
+    { $set: { admin_status } },
+    { new: true, runValidators: true }
+  )
+    .populate('asset_id', 'district type location risk_score')
+    .populate('engineer_id', 'name email role department');
+
+  if (!audit) {
+    throw new AppError('Audit not found', 404);
+  }
+
+  await activityLogService.record({
+    user_id: new mongoose.Types.ObjectId(req.user.id),
+    action: 'admin_audit_status',
+    entity: `Audit:${audit._id}`,
+    ip_address: getClientIp(req),
+    metadata: { admin_status },
+  });
+
+  const auditOut = await enrichAuditForResponse(audit);
+
+  res.json({
+    success: true,
+    data: { audit: auditOut },
+  });
+}
+
 async function createAudit(req, res) {
   let payload;
 
@@ -307,6 +420,9 @@ const reportPdfUpload = multer({
 }).single('file');
 
 module.exports = {
+  listAudits,
+  getAuditDetail,
+  patchAdminAudit,
   createAudit,
   getAuditsByAsset,
   generateAuditReport,

@@ -11,6 +11,8 @@ const assetRoutes = require('./routes/assetRoutes');
 const auditRoutes = require('./routes/auditRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 const logsRoutes = require('./routes/logsRoutes');
+const userRoutes = require('./routes/userRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const mapRoutes = require('./routes/mapRoutes');
 const aiRoutes = require('./routes/aiRoutes');
@@ -50,6 +52,8 @@ app.get('/health', (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/logs', logsRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/admin', adminRoutes);
 app.use('/api/assets', assetRoutes);
 app.use('/api/audits', auditRoutes);
 app.use('/api/upload', uploadRoutes);
