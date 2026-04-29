@@ -21,7 +21,12 @@ const allNavItems = [
   { path: "/app", icon: LayoutDashboard, label: "Dashboard" },
   { path: "/app/map", icon: Map, label: "GIS Map" },
   { path: "/app/audit", icon: ClipboardList, label: "Audit Form" },
-  { path: "/app/ai-analysis", icon: Brain, label: "AI Analysis" },
+  {
+    path: "/app/ai-analysis",
+    icon: Brain,
+    label: "AI Analysis",
+    govAdminOnly: true,
+  },
   { path: "/app/future-approval", icon: Building2, label: "Future Approval" },
   { path: "/app/admin", icon: Settings, label: "Admin Panel", adminOnly: true },
 ];
@@ -34,7 +39,17 @@ export function Layout() {
   const user = getStoredUser();
 
   const navItems = useMemo(() => {
-    return allNavItems.filter((item) => !item.adminOnly || user?.role === "admin");
+    return allNavItems.filter((item) => {
+      if (item.adminOnly && user?.role !== "admin") return false;
+      if (
+        item.govAdminOnly &&
+        user?.role !== "admin" &&
+        user?.role !== "government"
+      ) {
+        return false;
+      }
+      return true;
+    });
   }, [user?.role]);
 
   const isNavActive = (path: string) => {
