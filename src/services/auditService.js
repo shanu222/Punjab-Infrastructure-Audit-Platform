@@ -1,7 +1,6 @@
+import { API } from "@/config/api";
 import { apiRequest } from "@/utils/api";
 import { getToken } from "../utils/authStorage.js";
-
-const BASE = () => import.meta.env.VITE_API_BASE_URL || "";
 
 export async function fetchAssetsList() {
   return apiRequest("/api/assets");
@@ -12,7 +11,7 @@ export async function fetchAssetsList() {
  * @param {File} file
  */
 export async function uploadMediaFile(file) {
-  const url = `${BASE()}/api/upload`;
+  const url = API.upload;
   const headers = new Headers();
   const token = getToken();
   if (token) headers.set("Authorization", `Bearer ${token}`);

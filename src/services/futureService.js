@@ -1,3 +1,4 @@
+import { API } from "@/config/api";
 import { apiRequest } from "@/utils/api";
 import { getToken } from "../utils/authStorage.js";
 
@@ -24,12 +25,11 @@ export async function submitFutureAnalysis(payload) {
  * @returns {Promise<Blob>}
  */
 export async function fetchFutureAnalysisPdfBlob(payload) {
-  const base = import.meta.env.VITE_API_BASE_URL || "";
   const token = getToken();
   const headers = new Headers();
   headers.set("Content-Type", "application/json");
   if (token) headers.set("Authorization", `Bearer ${token}`);
-  const res = await fetch(`${base}/api/future-analysis/report-pdf`, {
+  const res = await fetch(API.futureAnalysisReportPdf, {
     method: "POST",
     headers,
     body: JSON.stringify(payload),

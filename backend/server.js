@@ -4,6 +4,10 @@ const helmet = require('helmet');
 const mongoose = require('mongoose');
 const config = require('./config');
 const logger = require('./utils/logger');
+const asyncHandler = require('./middleware/asyncHandler');
+const { validateBody } = require('./middleware/validate');
+const { loginSchema } = require('./validators/schemas');
+const { login: loginUser } = require('./controllers/authController');
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 
 const authRoutes = require('./routes/authRoutes');
@@ -25,26 +29,42 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 app.use(helmet());
-const corsOriginOption = () => {
+
+const DEFAULT_CORS_ORIGINS = [
+  'https://punjab-infrastructure-audit-platform.vercel.app',
+  'https://www.sustainablesolution360.com',
+];
+
+/** Merge `CORS_ORIGIN` (comma-separated) with defaults; dedupe. Wildcard `*` disables credentials. */
+function resolveCorsOrigin() {
   const raw = process.env.CORS_ORIGIN;
-  if (raw === '*') return '*';
-  if (!raw || raw === 'true') return true;
-  const list = raw
-    .split(',')
-    .map((s) => s.trim())
-    .filter(Boolean);
-  if (list.length === 0) return true;
-  if (list.length === 1) return list[0];
-  return list;
-};
-const resolvedCorsOrigin = corsOriginOption();
-app.use(
-  cors({
-    origin: resolvedCorsOrigin,
-    credentials: resolvedCorsOrigin !== '*',
-  })
-);
+  if (raw === '*') {
+    return { origin: '*', credentials: false };
+  }
+  const fromEnv = raw
+    ? raw
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)
+    : [];
+  const merged = [...new Set([...DEFAULT_CORS_ORIGINS, ...fromEnv])];
+  if (merged.length === 0) {
+    return { origin: true, credentials: true };
+  }
+  if (merged.length === 1) {
+    return { origin: merged[0], credentials: true };
+  }
+  return { origin: merged, credentials: true };
+}
+
+const corsOpts = resolveCorsOrigin();
+app.use(cors(corsOpts));
 app.use(express.json({ limit: '5mb' }));
+
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
+});
 
 app.use((req, res, next) => {
   const started = Date.now();
@@ -75,6 +95,9 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+/** Backward compatibility: older clients called `/api/login` or `/login` instead of `/api/auth/login`. */
+app.post('/api/login', validateBody(loginSchema), asyncHandler(loginUser));
+app.post('/login', validateBody(loginSchema), asyncHandler(loginUser));
 app.use('/api/logs', logsRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/admin', adminRoutes);

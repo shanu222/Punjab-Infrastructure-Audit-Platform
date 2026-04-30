@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 const AppError = require('../utils/AppError');
 
-function notFoundHandler(req, res, next) {
-  next(new AppError(`Route not found: ${req.method} ${req.originalUrl}`, 404));
+function notFoundHandler(req, res) {
+  res.status(404).json({ error: 'Route not found' });
 }
 
 function errorHandler(err, req, res, next) {

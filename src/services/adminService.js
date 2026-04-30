@@ -1,3 +1,4 @@
+import { API } from "@/config/api";
 import { apiRequest } from "@/utils/api";
 import { getToken } from "../utils/authStorage.js";
 
@@ -115,11 +116,10 @@ export async function uploadStandardsDocument(file) {
   const fd = new FormData();
   fd.append("file", file);
   fd.append("folder", "reports");
-  const base = import.meta.env.VITE_API_BASE_URL || "";
   const token = getToken();
   const headers = new Headers();
   if (token) headers.set("Authorization", `Bearer ${token}`);
-  const res = await fetch(`${base}/api/upload`, { method: "POST", body: fd, headers });
+  const res = await fetch(API.upload, { method: "POST", body: fd, headers });
   const text = await res.text();
   let data = null;
   if (text) {

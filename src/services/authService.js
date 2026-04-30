@@ -1,14 +1,15 @@
+import { API_PATHS } from "@/config/api";
 import { apiRequest } from "@/utils/api";
 
 export async function login({ email, password, role }) {
-  return apiRequest("/api/auth/login", {
+  return apiRequest(API_PATHS.authLogin, {
     method: "POST",
     json: { email, password, role },
   });
 }
 
 export async function hintRole(email) {
-  return apiRequest("/api/auth/hint-role", {
+  return apiRequest(API_PATHS.authHintRole, {
     method: "POST",
     json: { email },
     skipNetworkToast: true,
@@ -27,7 +28,7 @@ export function collectDeviceInfo() {
 }
 
 export async function postClientLoginLog({ role, client_timestamp, device_info }) {
-  return apiRequest("/api/logs/login", {
+  return apiRequest(API_PATHS.logsLogin, {
     method: "POST",
     json: { role, client_timestamp, device_info },
     skipNetworkToast: true,
