@@ -20,6 +20,10 @@ const futureRoutes = require('./routes/futureRoutes');
 
 const app = express();
 
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
+
 app.use(helmet());
 const corsOriginOption = () => {
   const raw = process.env.CORS_ORIGIN;
@@ -55,12 +59,19 @@ app.use((req, res, next) => {
   next();
 });
 
+const healthPayload = () => ({
+  ok: true,
+  service: 'piap-backend',
+  timestamp: new Date().toISOString(),
+});
+
 app.get('/health', (req, res) => {
-  res.json({
-    ok: true,
-    service: 'piap-backend',
-    timestamp: new Date().toISOString(),
-  });
+  res.json(healthPayload());
+});
+
+/** Same payload as /health — useful when probing through `/api`-only paths or reverse proxies. */
+app.get('/api/health', (req, res) => {
+  res.json(healthPayload());
 });
 
 app.use('/api/auth', authRoutes);
@@ -87,8 +98,9 @@ async function start() {
     process.exit(1);
   }
 
-  const server = app.listen(config.port, () => {
-    logger.info('server_listening', { port: config.port, nodeEnv: config.nodeEnv });
+  const host = process.env.BIND_HOST || '0.0.0.0';
+  const server = app.listen(config.port, host, () => {
+    logger.info('server_listening', { port: config.port, host, nodeEnv: config.nodeEnv });
   });
 
   const shutdown = async (signal) => {

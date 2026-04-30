@@ -7,16 +7,16 @@ let warnedMissingBase = false;
 /**
  * API origin with **no** trailing slash.
  *
- * **Vercel:** set `NEXT_PUBLIC_API_URL` (same name as Next.js; this app is **Vite** and reads it at build time).
- * **Alternative:** `VITE_API_BASE_URL`.
+ * **Vite / Vercel:** set `VITE_API_BASE_URL` (preferred) or `NEXT_PUBLIC_API_URL` to your **HTTPS** API
+ * (e.g. `https://api.example.com`). Do not mark as Sensitive. Redeploy after changing.
  *
- * Local dev: leave unset to use relative `/api` + Vite proxy → localhost:5000.
+ * Local dev: leave unset → relative `/api` + Vite proxy.
  */
 export function getApiBaseUrl(): string {
   const baked = String(typeof __PIAP_API_BASE__ !== "undefined" ? __PIAP_API_BASE__ : "").trim();
   const fromMeta =
-    String(import.meta.env.NEXT_PUBLIC_API_URL || "").trim() ||
     String(import.meta.env.VITE_API_BASE_URL || "").trim() ||
+    String(import.meta.env.NEXT_PUBLIC_API_URL || "").trim() ||
     String(import.meta.env.VITE_API_URL || "").trim();
   const raw = baked || fromMeta;
   return raw.replace(/\/$/, "");
@@ -51,7 +51,7 @@ function warnIfMissingApiBase(base: string) {
   if (warnedMissingBase) return;
   warnedMissingBase = true;
   console.warn(
-    "[PIAP] No API base URL is set. Add NEXT_PUBLIC_API_URL (or VITE_API_BASE_URL) in Vercel and redeploy so API calls target your EC2 host instead of this origin.",
+    "[PIAP] No API base URL in bundle. Set VITE_API_BASE_URL (or NEXT_PUBLIC_API_URL) on Vercel, not Sensitive, then redeploy.",
   );
 }
 
@@ -91,10 +91,11 @@ export async function apiRequest(path: string, options: ApiRequestOptions = {}):
     if (e instanceof Error && e.name === "AbortError") {
       throw e;
     }
+    console.error("[PIAP API] fetch failed", { url, message: e instanceof Error ? e.message : String(e) });
     if (!skipNetworkToast) {
       toast.error("Server not reachable", {
         description:
-          "Set NEXT_PUBLIC_API_URL (or VITE_API_BASE_URL) in Vercel to your API HTTPS URL, redeploy, and ensure CORS allows this site. Mixed HTTP API + HTTPS site is blocked.",
+          "Set VITE_API_BASE_URL (HTTPS) on Vercel, redeploy, allow CORS on EC2, and expose 443/80. HTTP API from HTTPS Vercel is blocked.",
       });
     }
     const err = new Error(e instanceof Error ? e.message : "Network error") as ApiError;

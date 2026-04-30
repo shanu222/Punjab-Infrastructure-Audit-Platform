@@ -16,9 +16,12 @@ function figmaAssetResolver() {
   };
 }
 
-/** Baked into the client bundle at build time (Vercel injects NEXT_PUBLIC_API_URL into `process.env`). */
+/** Baked into the client bundle at build time (Vercel `process.env` during `vite build`). */
 function resolveApiBaseForDefine(): string {
-  const raw = process.env.NEXT_PUBLIC_API_URL || process.env.VITE_API_BASE_URL || "";
+  const raw =
+    process.env.VITE_API_BASE_URL ||
+    process.env.NEXT_PUBLIC_API_URL ||
+    "";
   return String(raw).trim().replace(/\/$/, "");
 }
 
@@ -27,7 +30,7 @@ export default defineConfig(() => {
   if (process.env.VERCEL || process.env.CI) {
     console.info(
       "[PIAP build] API base URL in client bundle:",
-      apiBase ? `yes (${apiBase.length} chars)` : "NO — set NEXT_PUBLIC_API_URL in Vercel (uncheck Sensitive for build exposure), then redeploy",
+      apiBase ? `yes (${apiBase.length} chars)` : "NO — set VITE_API_BASE_URL or NEXT_PUBLIC_API_URL in Vercel (not Sensitive), then redeploy",
     );
   }
 
