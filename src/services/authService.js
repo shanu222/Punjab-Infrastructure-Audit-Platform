@@ -11,6 +11,7 @@ export async function hintRole(email) {
   return apiRequest("/api/auth/hint-role", {
     method: "POST",
     json: { email },
+    skipNetworkToast: true,
   });
 }
 
@@ -29,5 +30,6 @@ export async function postClientLoginLog({ role, client_timestamp, device_info }
   return apiRequest("/api/logs/login", {
     method: "POST",
     json: { role, client_timestamp, device_info },
+    skipNetworkToast: true,
   });
 }

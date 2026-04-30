@@ -1,18 +1,25 @@
 import { toast } from "sonner";
 import { getToken } from "./authStorage.js";
 
+let warnedInsecure = false;
+let warnedMissingBase = false;
+
 /**
- * Production API origin (no trailing slash).
- * Set in Vercel: **VITE_API_BASE_URL** = `https://your-ec2-or-alb-host:5000` (HTTPS required when the site is served over HTTPS).
- * Leave empty in local dev to use relative `/api` + Vite proxy (see `vite.config.ts`).
+ * API origin with **no** trailing slash.
+ *
+ * **Vercel:** set `NEXT_PUBLIC_API_URL` (same name as Next.js; this app is **Vite** and reads it at build time).
+ * **Alternative:** `VITE_API_BASE_URL`.
+ *
+ * Local dev: leave unset to use relative `/api` + Vite proxy → localhost:5000.
  */
 export function getApiBaseUrl(): string {
-  const raw =
-    (import.meta.env.VITE_API_BASE_URL as string | undefined) ||
-    (import.meta.env.VITE_API_URL as string | undefined) ||
-    (import.meta.env.NEXT_PUBLIC_API_URL as string | undefined) ||
-    "";
-  return String(raw).trim().replace(/\/$/, "");
+  const baked = String(typeof __PIAP_API_BASE__ !== "undefined" ? __PIAP_API_BASE__ : "").trim();
+  const fromMeta =
+    String(import.meta.env.NEXT_PUBLIC_API_URL || "").trim() ||
+    String(import.meta.env.VITE_API_BASE_URL || "").trim() ||
+    String(import.meta.env.VITE_API_URL || "").trim();
+  const raw = baked || fromMeta;
+  return raw.replace(/\/$/, "");
 }
 
 export type ApiRequestOptions = RequestInit & {
@@ -24,9 +31,29 @@ export type ApiRequestOptions = RequestInit & {
 export type ApiError = Error & {
   status?: number;
   body?: unknown;
-  /** Set when fetch failed (offline, DNS, CORS, mixed content, etc.) */
   isNetworkError?: boolean;
 };
+
+function warnIfInsecureApi(base: string) {
+  if (typeof window === "undefined" || !base) return;
+  if (window.location.protocol !== "https:") return;
+  if (!base.startsWith("http:")) return;
+  if (warnedInsecure) return;
+  warnedInsecure = true;
+  console.warn(
+    "[PIAP] Using insecure API (HTTP) from an HTTPS page will be blocked by the browser. Enable HTTPS on your API host or use an HTTPS reverse proxy.",
+  );
+}
+
+function warnIfMissingApiBase(base: string) {
+  if (typeof window === "undefined" || base) return;
+  if (!import.meta.env.PROD) return;
+  if (warnedMissingBase) return;
+  warnedMissingBase = true;
+  console.warn(
+    "[PIAP] No API base URL is set. Add NEXT_PUBLIC_API_URL (or VITE_API_BASE_URL) in Vercel and redeploy so API calls target your EC2 host instead of this origin.",
+  );
+}
 
 /**
  * JSON `fetch` helper. Paths must start with `/api/...`.
@@ -34,8 +61,15 @@ export type ApiError = Error & {
 export async function apiRequest(path: string, options: ApiRequestOptions = {}): Promise<unknown> {
   const { json, skipNetworkToast, ...rest } = options;
   const base = getApiBaseUrl();
+  warnIfMissingApiBase(base);
+  warnIfInsecureApi(base);
+
   const normalized = path.startsWith("/") ? path : `/${path}`;
   const url = `${base}${normalized}`;
+
+  if (import.meta.env.DEV) {
+    console.debug("[PIAP API]", url);
+  }
 
   const headers = new Headers(rest.headers || {});
   if (json !== undefined) {
@@ -60,7 +94,7 @@ export async function apiRequest(path: string, options: ApiRequestOptions = {}):
     if (!skipNetworkToast) {
       toast.error("Server not reachable", {
         description:
-          "Check your connection and that VITE_API_BASE_URL points to your API (use HTTPS when the app is on HTTPS).",
+          "Set NEXT_PUBLIC_API_URL (or VITE_API_BASE_URL) in Vercel to your API HTTPS URL, redeploy, and ensure CORS allows this site. Mixed HTTP API + HTTPS site is blocked.",
       });
     }
     const err = new Error(e instanceof Error ? e.message : "Network error") as ApiError;
