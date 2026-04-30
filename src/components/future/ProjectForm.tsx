@@ -44,7 +44,7 @@ export function ProjectForm({ form, onChange, errors }: Props) {
         <input
           value={form.project_name}
           onChange={(e) => onChange("project_name", e.target.value)}
-          className="w-full px-3 py-2.5 rounded-lg border border-border bg-background"
+          className="w-full px-3 py-2.5 rounded-lg border border-border bg-input-background"
           placeholder="e.g., GT Road widening — Phase 2"
         />
         {errors.project_name && <p className="text-xs text-destructive mt-1">{errors.project_name}</p>}
@@ -55,7 +55,7 @@ export function ProjectForm({ form, onChange, errors }: Props) {
         <select
           value={form.type}
           onChange={(e) => onChange("type", e.target.value as FutureFormState["type"])}
-          className="w-full px-3 py-2.5 rounded-lg border border-border bg-background capitalize"
+          className="w-full px-3 py-2.5 rounded-lg border border-border bg-input-background capitalize"
         >
           <option value="building">Building</option>
           <option value="road">Road</option>
@@ -70,7 +70,7 @@ export function ProjectForm({ form, onChange, errors }: Props) {
           list="future-punjab-districts"
           value={form.district}
           onChange={(e) => onChange("district", e.target.value)}
-          className="w-full px-3 py-2.5 rounded-lg border border-border bg-background"
+          className="w-full px-3 py-2.5 rounded-lg border border-border bg-input-background"
           placeholder="Type or pick a district"
         />
         <datalist id="future-punjab-districts">
@@ -88,7 +88,7 @@ export function ProjectForm({ form, onChange, errors }: Props) {
             value={form.lat}
             onChange={(e) => onChange("lat", e.target.value)}
             inputMode="decimal"
-            className="w-full px-3 py-2.5 rounded-lg border border-border bg-background font-mono text-sm"
+            className="w-full px-3 py-2.5 rounded-lg border border-border bg-input-background font-mono text-sm"
             placeholder="31.52"
           />
           {errors.lat && <p className="text-xs text-destructive mt-1">{errors.lat}</p>}
@@ -99,7 +99,7 @@ export function ProjectForm({ form, onChange, errors }: Props) {
             value={form.lng}
             onChange={(e) => onChange("lng", e.target.value)}
             inputMode="decimal"
-            className="w-full px-3 py-2.5 rounded-lg border border-border bg-background font-mono text-sm"
+            className="w-full px-3 py-2.5 rounded-lg border border-border bg-input-background font-mono text-sm"
             placeholder="74.35"
           />
           {errors.lng && <p className="text-xs text-destructive mt-1">{errors.lng}</p>}
@@ -111,7 +111,7 @@ export function ProjectForm({ form, onChange, errors }: Props) {
         <input
           value={form.material}
           onChange={(e) => onChange("material", e.target.value)}
-          className="w-full px-3 py-2.5 rounded-lg border border-border bg-background"
+          className="w-full px-3 py-2.5 rounded-lg border border-border bg-input-background"
           placeholder="e.g., Reinforced concrete M35"
         />
         {errors.material && <p className="text-xs text-destructive mt-1">{errors.material}</p>}
@@ -122,7 +122,7 @@ export function ProjectForm({ form, onChange, errors }: Props) {
         <input
           value={form.structural_type}
           onChange={(e) => onChange("structural_type", e.target.value)}
-          className="w-full px-3 py-2.5 rounded-lg border border-border bg-background"
+          className="w-full px-3 py-2.5 rounded-lg border border-border bg-input-background"
           placeholder="e.g., RCC frame, simply supported slab"
         />
         {errors.structural_type && <p className="text-xs text-destructive mt-1">{errors.structural_type}</p>}

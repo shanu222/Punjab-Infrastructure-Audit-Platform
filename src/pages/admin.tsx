@@ -711,7 +711,7 @@ export function AdminPanel() {
                   setUserPage(1);
                 }}
                 placeholder="Name, email, department"
-                className="px-3 py-2 rounded-lg border border-border bg-background min-w-[200px]"
+                className="px-3 py-2 rounded-lg border border-border bg-input-background min-w-[200px]"
               />
             </div>
             <div className="flex flex-col gap-1">
@@ -722,7 +722,7 @@ export function AdminPanel() {
                   setUserRoleFilter(e.target.value);
                   setUserPage(1);
                 }}
-                className="px-3 py-2 rounded-lg border border-border bg-background"
+                className="px-3 py-2 rounded-lg border border-border bg-input-background"
               >
                 <option value="">All</option>
                 <option value="admin">admin</option>
@@ -738,7 +738,7 @@ export function AdminPanel() {
                   setUserStatusFilter(e.target.value as "" | "active" | "inactive");
                   setUserPage(1);
                 }}
-                className="px-3 py-2 rounded-lg border border-border bg-background"
+                className="px-3 py-2 rounded-lg border border-border bg-input-background"
               >
                 <option value="">All</option>
                 <option value="active">Active</option>
@@ -792,12 +792,12 @@ export function AdminPanel() {
               value={assetSearch}
               onChange={(e) => setAssetSearch(e.target.value)}
               placeholder="Search assets…"
-              className="px-3 py-2 rounded-lg border border-border bg-background flex-1 min-w-[180px]"
+              className="px-3 py-2 rounded-lg border border-border bg-input-background flex-1 min-w-[180px]"
             />
             <select
               value={assetDistrict}
               onChange={(e) => setAssetDistrict(e.target.value)}
-              className="px-3 py-2 rounded-lg border border-border bg-background"
+              className="px-3 py-2 rounded-lg border border-border bg-input-background"
             >
               <option value="">All districts</option>
               {districts.map((d) => (
@@ -856,7 +856,7 @@ export function AdminPanel() {
                 setAuditFrom(e.target.value);
                 setAuditPage(1);
               }}
-              className="px-3 py-2 rounded-lg border border-border bg-background"
+              className="px-3 py-2 rounded-lg border border-border bg-input-background"
             />
             <input
               type="date"
@@ -865,7 +865,7 @@ export function AdminPanel() {
                 setAuditTo(e.target.value);
                 setAuditPage(1);
               }}
-              className="px-3 py-2 rounded-lg border border-border bg-background"
+              className="px-3 py-2 rounded-lg border border-border bg-input-background"
             />
             <select
               value={auditEngineer}
@@ -873,7 +873,7 @@ export function AdminPanel() {
                 setAuditEngineer(e.target.value);
                 setAuditPage(1);
               }}
-              className="px-3 py-2 rounded-lg border border-border bg-background"
+              className="px-3 py-2 rounded-lg border border-border bg-input-background"
             >
               <option value="">All engineers</option>
               {engineers.map((en) => (
@@ -888,7 +888,7 @@ export function AdminPanel() {
                 setAuditRisk(e.target.value);
                 setAuditPage(1);
               }}
-              className="px-3 py-2 rounded-lg border border-border bg-background"
+              className="px-3 py-2 rounded-lg border border-border bg-input-background"
             >
               <option value="">All risk levels</option>
               <option value="SAFE">SAFE</option>
@@ -902,7 +902,7 @@ export function AdminPanel() {
                 setAuditStatus(e.target.value);
                 setAuditPage(1);
               }}
-              className="px-3 py-2 rounded-lg border border-border bg-background"
+              className="px-3 py-2 rounded-lg border border-border bg-input-background"
             >
               <option value="">Review status</option>
               <option value="pending">pending</option>
@@ -993,7 +993,7 @@ export function AdminPanel() {
                 setLogPage(1);
               }}
               placeholder="Search action / entity"
-              className="px-3 py-2 rounded-lg border border-border bg-background flex-1 min-w-[200px]"
+              className="px-3 py-2 rounded-lg border border-border bg-input-background flex-1 min-w-[200px]"
             />
             <select
               value={logScope}
@@ -1001,7 +1001,7 @@ export function AdminPanel() {
                 setLogScope(e.target.value as typeof logScope);
                 setLogPage(1);
               }}
-              className="px-3 py-2 rounded-lg border border-border bg-background"
+              className="px-3 py-2 rounded-lg border border-border bg-input-background"
             >
               <option value="">All categories</option>
               <option value="security">Login & security</option>
@@ -1083,20 +1083,20 @@ export function AdminPanel() {
                 <h3 className="font-semibold text-lg">{userModal === "create" ? "Create user" : "Edit user"}</h3>
                 <label className="block text-xs text-muted-foreground">Name</label>
                 <input
-                  className="w-full px-3 py-2 rounded-lg border border-border bg-background"
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-input-background"
                   value={userDraft.name}
                   onChange={(e) => setUserDraft((d) => ({ ...d, name: e.target.value }))}
                 />
                 <label className="block text-xs text-muted-foreground">Email</label>
                 <input
-                  className="w-full px-3 py-2 rounded-lg border border-border bg-background"
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-input-background"
                   value={userDraft.email}
                   onChange={(e) => setUserDraft((d) => ({ ...d, email: e.target.value }))}
                   disabled={userModal === "edit"}
                 />
                 <label className="block text-xs text-muted-foreground">Department</label>
                 <input
-                  className="w-full px-3 py-2 rounded-lg border border-border bg-background"
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-input-background"
                   value={userDraft.department}
                   onChange={(e) => setUserDraft((d) => ({ ...d, department: e.target.value }))}
                 />
@@ -1105,13 +1105,13 @@ export function AdminPanel() {
                 </label>
                 <input
                   type="password"
-                  className="w-full px-3 py-2 rounded-lg border border-border bg-background"
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-input-background"
                   value={userDraft.password}
                   onChange={(e) => setUserDraft((d) => ({ ...d, password: e.target.value }))}
                 />
                 <label className="block text-xs text-muted-foreground">Role</label>
                 <select
-                  className="w-full px-3 py-2 rounded-lg border border-border bg-background"
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-input-background"
                   value={userDraft.role}
                   onChange={(e) => setUserDraft((d) => ({ ...d, role: e.target.value }))}
                 >
@@ -1142,7 +1142,7 @@ export function AdminPanel() {
                 <h3 className="font-semibold text-lg">{assetModal === "create" ? "Add asset" : "Edit asset"}</h3>
                 <label className="block text-xs text-muted-foreground">Type</label>
                 <select
-                  className="w-full px-3 py-2 rounded-lg border border-border bg-background"
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-input-background"
                   value={assetDraft.type}
                   onChange={(e) => setAssetDraft((d) => ({ ...d, type: e.target.value }))}
                 >
@@ -1154,7 +1154,7 @@ export function AdminPanel() {
                 </select>
                 <label className="block text-xs text-muted-foreground">District</label>
                 <input
-                  className="w-full px-3 py-2 rounded-lg border border-border bg-background"
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-input-background"
                   value={assetDraft.district}
                   onChange={(e) => setAssetDraft((d) => ({ ...d, district: e.target.value }))}
                 />
@@ -1162,7 +1162,7 @@ export function AdminPanel() {
                   <div>
                     <label className="block text-xs text-muted-foreground">Latitude</label>
                     <input
-                      className="w-full px-3 py-2 rounded-lg border border-border bg-background"
+                      className="w-full px-3 py-2 rounded-lg border border-border bg-input-background"
                       value={assetDraft.lat}
                       onChange={(e) => setAssetDraft((d) => ({ ...d, lat: e.target.value }))}
                     />
@@ -1170,7 +1170,7 @@ export function AdminPanel() {
                   <div>
                     <label className="block text-xs text-muted-foreground">Longitude</label>
                     <input
-                      className="w-full px-3 py-2 rounded-lg border border-border bg-background"
+                      className="w-full px-3 py-2 rounded-lg border border-border bg-input-background"
                       value={assetDraft.lng}
                       onChange={(e) => setAssetDraft((d) => ({ ...d, lng: e.target.value }))}
                     />
@@ -1178,25 +1178,25 @@ export function AdminPanel() {
                 </div>
                 <label className="block text-xs text-muted-foreground">Construction year (optional)</label>
                 <input
-                  className="w-full px-3 py-2 rounded-lg border border-border bg-background"
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-input-background"
                   value={assetDraft.construction_year}
                   onChange={(e) => setAssetDraft((d) => ({ ...d, construction_year: e.target.value }))}
                 />
                 <label className="block text-xs text-muted-foreground">Material (optional)</label>
                 <input
-                  className="w-full px-3 py-2 rounded-lg border border-border bg-background"
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-input-background"
                   value={assetDraft.material}
                   onChange={(e) => setAssetDraft((d) => ({ ...d, material: e.target.value }))}
                 />
                 <label className="block text-xs text-muted-foreground">Structural type (optional)</label>
                 <input
-                  className="w-full px-3 py-2 rounded-lg border border-border bg-background"
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-input-background"
                   value={assetDraft.structural_type}
                   onChange={(e) => setAssetDraft((d) => ({ ...d, structural_type: e.target.value }))}
                 />
                 <label className="block text-xs text-muted-foreground">Risk score 0–100 (optional)</label>
                 <input
-                  className="w-full px-3 py-2 rounded-lg border border-border bg-background"
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-input-background"
                   value={assetDraft.risk_score}
                   onChange={(e) => setAssetDraft((d) => ({ ...d, risk_score: e.target.value }))}
                 />

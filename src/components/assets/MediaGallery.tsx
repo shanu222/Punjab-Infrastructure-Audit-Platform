@@ -96,7 +96,7 @@ export function MediaGallery({ items }: Props) {
           >
             <button
               type="button"
-              className="absolute right-4 top-4 rounded-full bg-white/10 p-2 text-white hover:bg-white/20"
+              className="absolute right-4 top-4 rounded-full bg-black/40 p-2 text-white hover:bg-black/55 dark:bg-white/15 dark:hover:bg-white/25"
               aria-label="Close"
               onClick={(e) => {
                 e.stopPropagation();

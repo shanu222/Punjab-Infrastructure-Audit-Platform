@@ -94,7 +94,7 @@ export function DashboardPage() {
             type="button"
             onClick={handleRefresh}
             disabled={refreshing || loading}
-            className="inline-flex items-center justify-center gap-2 self-start px-4 py-2.5 rounded-xl border border-border bg-card text-sm font-semibold hover:bg-muted/60 transition-all active:scale-[0.98] disabled:opacity-50 min-h-11 shadow-sm"
+            className="inline-flex items-center justify-center gap-2 self-start px-4 py-2.5 rounded-xl piap-surface text-sm font-semibold hover:bg-white/90 dark:hover:bg-slate-800/85 transition-all active:scale-[0.98] disabled:opacity-50 min-h-11 shadow-sm"
           >
             <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
             Refresh

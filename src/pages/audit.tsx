@@ -463,7 +463,7 @@ export function AuditFormPage() {
         </motion.div>
       )}
 
-      <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-border bg-background/95 p-3 backdrop-blur-md md:static md:z-0 md:border-0 md:bg-transparent md:p-0">
+      <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-border bg-card/90 p-3 backdrop-blur-md md:static md:z-0 md:border-0 md:bg-transparent md:p-0">
         <div className="mx-auto flex max-w-2xl gap-2">
           {step > 0 && (
             <button

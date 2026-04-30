@@ -140,7 +140,8 @@
 
 @layer base {
   html {
-    @apply transition-colors duration-300;
+    @apply transition-colors duration-300 min-h-full;
+    font-size: var(--font-size);
   }
 
   * {
@@ -148,7 +149,7 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply bg-transparent text-foreground antialiased;
     font-family: var(--font-sans);
   }
 
@@ -156,10 +157,6 @@
   * Default typography styles for HTML elements (h1-h4, p, label, button, input).
   * These are in @layer base, so Tailwind utility classes (like text-sm, text-lg) automatically override them.
   */
-
-  html {
-    font-size: var(--font-size);
-  }
 
   h1 {
     font-size: var(--text-2xl);
@@ -203,5 +200,12 @@
     font-size: var(--text-base);
     font-weight: var(--font-weight-normal);
     line-height: 1.5;
+  }
+}
+
+@layer components {
+  /** Frosted panel over global background (dashboard widgets, etc.) */
+  .piap-surface {
+    @apply rounded-xl border border-border/80 bg-white/80 text-card-foreground shadow-sm backdrop-blur-sm backdrop-saturate-150 dark:bg-slate-800/70 dark:backdrop-blur-md md:backdrop-blur-md motion-reduce:backdrop-blur-none motion-reduce:bg-card/95 dark:motion-reduce:bg-card/95;
   }
 }

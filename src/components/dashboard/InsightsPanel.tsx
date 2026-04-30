@@ -15,7 +15,7 @@ type Props = {
 export function InsightsPanel({ insights, loading }: Props) {
   if (loading && !insights) {
     return (
-      <div className="bg-card rounded-xl p-6 border border-border space-y-4 animate-pulse">
+      <div className="piap-surface p-6 space-y-4 animate-pulse">
         <div className="h-6 bg-muted rounded w-2/3" />
         <div className="h-16 bg-muted/60 rounded-lg" />
         <div className="h-16 bg-muted/60 rounded-lg" />

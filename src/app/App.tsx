@@ -2,6 +2,7 @@ import type { CSSProperties } from "react";
 import { RouterProvider } from "react-router";
 import { Toaster } from "sonner";
 import { ThemeProvider, useTheme } from "@/context/ThemeContext";
+import { AppBackground } from "@/components/layout/AppBackground";
 import { router } from "./routes";
 
 function ThemedToaster() {
@@ -28,8 +29,10 @@ function ThemedToaster() {
 export default function App() {
   return (
     <ThemeProvider>
-      <RouterProvider router={router} />
-      <ThemedToaster />
+      <AppBackground>
+        <RouterProvider router={router} />
+        <ThemedToaster />
+      </AppBackground>
     </ThemeProvider>
   );
 }

@@ -181,7 +181,7 @@ export function MapGisPage() {
   const banners = useMemo(() => buildInsightBanners(insights), [insights]);
 
   return (
-    <div className="flex h-full min-h-0 flex-col gap-0 bg-background">
+    <div className="flex h-full min-h-0 flex-col gap-0 bg-transparent">
       <header className="shrink-0 border-b border-border bg-card/80 px-4 py-3 backdrop-blur-sm md:px-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
@@ -277,12 +277,12 @@ export function MapGisPage() {
 
           <div className="relative min-h-0 flex-1 overflow-hidden rounded-xl md:min-h-[420px]">
             {error && !loading && (
-              <div className="absolute inset-0 z-[400] flex items-center justify-center bg-background/80 p-4 text-center">
+              <div className="absolute inset-0 z-[400] flex items-center justify-center bg-card/85 backdrop-blur-sm p-4 text-center">
                 <p className="max-w-md text-sm text-destructive">{error}</p>
               </div>
             )}
             {!loading && displayedAssets.length === 0 && !error && (
-              <div className="absolute inset-0 z-[400] flex items-center justify-center bg-background/60 p-4 text-center">
+              <div className="absolute inset-0 z-[400] flex items-center justify-center bg-card/75 backdrop-blur-sm p-4 text-center">
                 <p className="text-sm text-muted-foreground">
                   No infrastructure assets match the current filters. Try
                   widening type, risk, district, or disaster context.

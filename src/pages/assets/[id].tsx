@@ -315,7 +315,7 @@ export function AssetDetailPage() {
                 <button
                   type="button"
                   onClick={handleDownloadReport}
-                  className="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 py-3 text-sm font-medium transition hover:bg-muted"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-card/85 px-4 py-3 text-sm font-medium backdrop-blur-sm transition hover:bg-muted"
                 >
                   <Download className="size-4" />
                   Download report

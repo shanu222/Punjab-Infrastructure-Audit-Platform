@@ -142,7 +142,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-primary/[0.07] via-background to-secondary/[0.08] flex items-center justify-center p-4 sm:p-6 transition-colors duration-300">
+    <div className="relative min-h-screen bg-transparent flex items-center justify-center p-4 sm:p-6 transition-colors duration-300">
       <div className="absolute right-4 top-4 z-10 sm:right-6 sm:top-6">
         <ThemeToggle mode="toggle" />
       </div>
@@ -163,7 +163,7 @@ export default function LoginPage() {
           </p>
         </header>
 
-        <div className="bg-card rounded-2xl shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-card-hover)] transition-all duration-300 p-6 sm:p-8 md:p-10 border border-border">
+        <div className="rounded-2xl border border-border bg-white/80 p-6 shadow-[var(--shadow-card)] backdrop-blur-sm transition-all duration-300 hover:shadow-[var(--shadow-card-hover)] dark:bg-slate-800/70 dark:backdrop-blur-md md:backdrop-blur-md sm:p-8 md:p-10">
           <h2 className="text-xl md:text-2xl font-semibold text-center mb-6 md:mb-8 text-foreground">
             Select your role
           </h2>

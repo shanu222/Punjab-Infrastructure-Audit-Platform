@@ -26,7 +26,7 @@ function riskFromSubtitle(sub?: string) {
 export function ActivityFeed({ items, loading }: Props) {
   if (loading && !items.length) {
     return (
-      <div className="bg-card rounded-xl border border-border overflow-hidden animate-pulse">
+      <div className="piap-surface overflow-hidden animate-pulse">
         <div className="p-4 border-b border-border h-10 bg-muted/40" />
         <div className="divide-y divide-border">
           {[1, 2, 3, 4].map((i) => (
@@ -38,7 +38,7 @@ export function ActivityFeed({ items, loading }: Props) {
   }
 
   return (
-    <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
+    <div className="piap-surface shadow-sm overflow-hidden">
       <div className="p-4 sm:p-6 border-b border-border flex items-center justify-between gap-2">
         <h3 className="font-semibold text-foreground">Recent activity</h3>
         <span className="text-xs text-muted-foreground">Latest audits & alerts</span>

@@ -38,14 +38,14 @@ export function RiskChart({ distribution, loading }: Props) {
 
   if (loading && !distribution) {
     return (
-      <div className="bg-card rounded-xl p-6 border border-border min-h-[320px] animate-pulse flex items-center justify-center">
+      <div className="piap-surface p-6 min-h-[320px] animate-pulse flex items-center justify-center">
         <div className="h-48 w-48 rounded-full bg-muted" />
       </div>
     );
   }
 
   return (
-    <div className="bg-card rounded-xl p-4 sm:p-6 shadow-sm border border-border">
+    <div className="piap-surface p-4 sm:p-6 shadow-sm">
       <h3 className="font-semibold text-foreground mb-4">Risk distribution (audits)</h3>
       <div className="h-[280px] sm:h-[300px] w-full min-w-0">
         <ResponsiveContainer width="100%" height="100%">

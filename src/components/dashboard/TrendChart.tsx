@@ -23,7 +23,7 @@ export function TrendChart({ data, loading }: Props) {
 
   if (loading && (!data || !data.length)) {
     return (
-      <div className="bg-card rounded-xl p-6 border border-border min-h-[300px] animate-pulse">
+      <div className="piap-surface p-6 min-h-[300px] animate-pulse">
         <div className="h-6 bg-muted rounded w-1/3 mb-4" />
         <div className="h-[220px] bg-muted/50 rounded-lg" />
       </div>
@@ -31,7 +31,7 @@ export function TrendChart({ data, loading }: Props) {
   }
 
   return (
-    <div className="bg-card rounded-xl p-4 sm:p-6 shadow-sm border border-border">
+    <div className="piap-surface p-4 sm:p-6 shadow-sm">
       <h3 className="font-semibold text-foreground mb-4">Audit trend by month</h3>
       <div className="h-[260px] sm:h-[300px] w-full min-w-0 overflow-x-auto">
         <ResponsiveContainer width="100%" height="100%" minWidth={320}>

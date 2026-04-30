@@ -59,7 +59,7 @@ export function MapPreview({ assets, loading }: Props) {
 
   if (loading && !list.length) {
     return (
-      <div className="bg-card rounded-xl p-6 border border-border min-h-[220px] animate-pulse">
+      <div className="piap-surface p-6 min-h-[220px] animate-pulse">
         <div className="h-5 bg-muted rounded w-1/3 mb-4" />
         <div className="h-44 bg-muted/40 rounded-lg" />
       </div>
@@ -67,7 +67,7 @@ export function MapPreview({ assets, loading }: Props) {
   }
 
   return (
-    <div className="bg-card rounded-xl p-4 sm:p-6 shadow-sm border border-border">
+    <div className="piap-surface p-4 sm:p-6 shadow-sm">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
         <h3 className="font-semibold text-foreground">Map preview</h3>
         <Link

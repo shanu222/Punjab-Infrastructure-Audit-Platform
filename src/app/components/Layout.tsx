@@ -150,9 +150,9 @@ export function Layout() {
   );
 
   return (
-    <div className="min-h-screen flex bg-background font-sans">
+    <div className="min-h-screen flex bg-transparent font-sans">
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex w-64 flex-col border-r border-sidebar-border bg-sidebar shadow-[var(--shadow-card)] z-30">
+      <aside className="hidden lg:flex w-64 flex-col border-r border-sidebar-border bg-sidebar/92 backdrop-blur-md backdrop-saturate-150 shadow-[var(--shadow-card)] z-30">
         <div className="p-5 border-b border-sidebar-border">
           <Brand />
         </div>
@@ -163,14 +163,14 @@ export function Layout() {
       </aside>
 
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="sticky top-0 z-20 flex h-14 md:h-16 items-center gap-2 border-b border-border/80 bg-card/90 px-3 md:px-5 backdrop-blur-md supports-[backdrop-filter]:bg-card/75 shadow-sm">
+        <header className="sticky top-0 z-20 flex h-14 md:h-16 items-center gap-2 border-b border-border/80 bg-card/88 px-3 md:px-5 backdrop-blur-md backdrop-saturate-150 supports-[backdrop-filter]:bg-card/80 shadow-sm">
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="lg:hidden rounded-xl shrink-0" aria-label="Open menu">
                 <Menu className="size-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-[min(100%,20rem)] p-0 flex flex-col bg-sidebar border-sidebar-border">
+            <SheetContent side="left" className="w-[min(100%,20rem)] p-0 flex flex-col bg-sidebar/95 backdrop-blur-md border-sidebar-border">
               <div className="p-5 border-b border-sidebar-border">
                 <Brand />
               </div>

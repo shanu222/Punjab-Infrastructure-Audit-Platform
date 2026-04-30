@@ -4,7 +4,7 @@ import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 export function NotFound() {
   return (
-    <div className="relative min-h-screen bg-background flex items-center justify-center p-4 transition-colors duration-300">
+    <div className="relative min-h-screen bg-transparent flex items-center justify-center p-4 transition-colors duration-300">
       <div className="absolute right-4 top-4 z-10">
         <ThemeToggle mode="toggle" />
       </div>

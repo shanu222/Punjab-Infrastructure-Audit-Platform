@@ -15,7 +15,7 @@ export function StatCard({ title, value, icon: Icon, trend, trendUp, color = "bg
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-card rounded-xl p-6 shadow-sm border border-border hover:shadow-md transition-shadow"
+      className="piap-surface p-6 shadow-sm hover:shadow-md transition-shadow"
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">

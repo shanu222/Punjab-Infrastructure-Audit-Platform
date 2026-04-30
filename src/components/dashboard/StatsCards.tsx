@@ -17,7 +17,7 @@ type Props = {
 
 function SkeletonCard() {
   return (
-    <div className="bg-card rounded-xl p-6 border border-border animate-pulse">
+    <div className="piap-surface p-6 animate-pulse">
       <div className="h-4 bg-muted rounded w-1/2 mb-4" />
       <div className="h-8 bg-muted rounded w-1/3 mb-2" />
       <div className="h-3 bg-muted rounded w-2/3" />
