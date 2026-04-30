@@ -24,6 +24,12 @@ function resolveApiBaseForDefine(): string {
 
 export default defineConfig(() => {
   const apiBase = resolveApiBaseForDefine();
+  if (process.env.VERCEL || process.env.CI) {
+    console.info(
+      "[PIAP build] API base URL in client bundle:",
+      apiBase ? `yes (${apiBase.length} chars)` : "NO — set NEXT_PUBLIC_API_URL in Vercel (uncheck Sensitive for build exposure), then redeploy",
+    );
+  }
 
   return {
     envPrefix: ["VITE_", "NEXT_PUBLIC_"],
